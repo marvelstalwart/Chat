@@ -33,7 +33,7 @@ export default function Signup() {
     }
     
     return()=> {
-      dispatch(reset)
+      dispatch(reset())
     }
   },[isSuccess, isError])
 

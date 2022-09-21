@@ -20,13 +20,13 @@ module.exports.protect = async (req, res, next)=> {
         
         catch (err) { 
            
-          return  res.status(401).send('Not authorized')
+          return  res.status(401).send({message: "Not Authorized"})
         }
        
     }  
 
     if (!token) {
-       return res.status(401).send('No token')
+       return res.status(401).send({message: "No token"})
     }
 }
 
