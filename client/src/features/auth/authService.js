@@ -13,6 +13,7 @@ const login = async (payload)=> {
 }
 
 const authService = {
-    register
+    register,
+    login
 }
 export default authService;

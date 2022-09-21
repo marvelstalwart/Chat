@@ -5,12 +5,15 @@ import { Link , Navigate, useNavigate} from 'react-router-dom'
 import * as yup from "yup";
 import { Formik, Form } from 'formik';
 import { faUserTie, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons'
-
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { login, reset } from '../../features/auth/authSlice';
+import swal from 'sweetalert2';
 export default function Signup() {
 
-
+  const {isError, isSuccess, message} = useSelector(state=> state.auth)
   let navigate = useNavigate()
+  let dispatch = useDispatch()
   let schema = yup.object().shape({
    
     email: yup.string().required("Email is required").email("Invalid email type"),
@@ -18,6 +21,21 @@ export default function Signup() {
    
   
   })
+
+  useEffect(()=> {
+    if (isError) {
+      swal({text:message, type:'error'})
+    }
+    if (isSuccess) {
+
+      navigate("/")
+
+    }
+    
+    return()=> {
+      dispatch(reset)
+    }
+  },[isSuccess, isError])
 
   return (
     <div className='w-full justify-center'>
@@ -41,9 +59,9 @@ export default function Signup() {
                 password: ""
               }}
               validationSchema={schema}
-              onSubmit={()=> {
-                  
-                navigate("/")
+              onSubmit={(values)=> {
+                    dispatch(login(values))
+
               }}
               
               >

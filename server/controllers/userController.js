@@ -7,14 +7,14 @@ module.exports.reg = async (req, res)=> {
     const {nickname, email, password} = req.body
     const emailExists = await userModel.findOne({email});
     if (!nickname|| !email || !password ) {
-       return res.status(400).json("One of the fields is empty")
+       return res.status(400).json({message: "One of the fields are empty" })
     } else {
         if (emailExists) {
-            return res.status(400).json("This email has already been registered")
+            return res.status(400).json({message: "This email has already been registered" })
         }
         const userExists = await userModel.findOne({nickname});
         if (userExists){
-            return res.status(400).json("Nickname has been selected")
+            return res.status(400).json({message: "Nickname has been selected" })
         }
     
         //Hash the password
@@ -40,7 +40,7 @@ module.exports.reg = async (req, res)=> {
 
         })
         .catch((err)=> {
-            res.status(400).json(`An error occured in the registration ${err.message}`)
+            res.status(400).json({message: "An error occured" })
         })
         }
         
@@ -62,7 +62,7 @@ module.exports.loginUser = async (req, res)=> {
                             _id: user.id,
                             name: user.name,
                             email: user.email,
-                            pass: pass,
+                            password: password,
                            
                             token: generateToken(user.id)
                         })

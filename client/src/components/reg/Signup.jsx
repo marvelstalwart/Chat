@@ -41,7 +41,7 @@ let schema = yup.object().shape({
         swal({type: 'success', text:"Success", confirmButtonText:"Login", showCancelButton:true})
           .then(function(){
               
-              navigate("/sign-in")
+              navigate("/")
           })
       }
       dispatch(reset)
@@ -86,7 +86,7 @@ let schema = yup.object().shape({
         </div> 
 
         <div className='text-red-500 text-[10px]'>
-                {touched && touched.nickname &&errors.nickname}
+                {touched && touched.nickname && errors.nickname}
                 </div> 
 
             <div className=' relative flex items-center'>
