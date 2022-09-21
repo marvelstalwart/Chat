@@ -2,6 +2,24 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 
+module.exports.getUsers = async(req,res)=> {
+       
+    try {const users = await userModel.find()
+        if(users) {
+            res.status(200).json(users)
+        }
+        else{
+            res.status(200).json({message: "No users found"})
+        }
+        }
+
+        catch(err) {
+            res.status(400).json(err.message)
+        }
+       
+
+}
+
 module.exports.reg = async (req, res)=> {
  
     const {nickname, email, password} = req.body

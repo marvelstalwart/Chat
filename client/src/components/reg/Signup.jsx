@@ -38,7 +38,7 @@ let schema = yup.object().shape({
          
       }
       if (isSuccess) {
-        swal({type: 'success', text:"Success", confirmButtonText:"Login", showCancelButton:true})
+        swal({type: 'success', text:"Success", confirmButtonText:"Proceed", showCancelButton:true})
           .then(function(){
               
               navigate("/")
