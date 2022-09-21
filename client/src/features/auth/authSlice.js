@@ -7,8 +7,11 @@ const initialState = {
     isSuccess: false,
     isLoading: false,
     user: user? user:null, 
-    message: ''
+    message: '',
+    avatars: null
 }
+
+
 
 export const register = createAsyncThunk('auth/register',async (payload, thunkAPI)=> {
         try {
@@ -32,6 +35,32 @@ export const login = createAsyncThunk('auth/login', async(payload, thunkAPI)=> {
     }
 })
 
+export const setAvatar = createAsyncThunk("auth/setAvatar", async(payload, thunkAPI)=> {
+              
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await authService.setAvatar(payload, token)
+        }
+        catch(err) {
+            const message = err.response && err.response.data && err.response.data.message || err.message || err.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+
+
+} )
+
+export const getAvatars = createAsyncThunk("auth/getAvatars", async(_,thunkAPI)=> {
+
+    try {
+        return await authService.getAvatars()
+    }
+    catch(err) {
+        const message = err.response && err.response.data && err.response.data.message || err.message ||err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+
+})
 export const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -41,7 +70,6 @@ export const authSlice = createSlice({
             state.isError= false
             state.isSuccess= false
             state.isLoading= false
-            state.user= null 
             state.message= ''
         }
     },
@@ -73,7 +101,36 @@ export const authSlice = createSlice({
             state.isError = true
             state.message = action.payload
         })
+        .addCase(setAvatar.pending, (state)=> {
+            state.isLoading= true
 
+        })
+        .addCase(setAvatar.fulfilled, (state, action)=> {
+            state.isLoading= false
+            state.isSuccess = true
+            state.user = action.payload
+        })
+        .addCase(setAvatar.rejected, (state, action)=> {
+            state.isLoading = false
+            state.isError = true
+            state.message= action.payload
+        })
+        .addCase(getAvatars.pending, (state)=> {
+            state.isLoading=true
+            
+        })
+        .addCase(getAvatars.fulfilled, (state, action)=> {
+            state.isLoading = false
+            state.isSuccess = true
+            state.avatars = action.payload
+
+        })
+        .addCase(getAvatars.rejected, (state, action)=> {
+            state.isLoading = false
+            state.isError = true
+            state.message= action.payload
+
+        })
     }
 })
 

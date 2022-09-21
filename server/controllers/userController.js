@@ -20,6 +20,30 @@ module.exports.getUsers = async(req,res)=> {
 
 }
 
+module.exports.setAvatar = async (req, res)=> {
+    const {id, avatarImage} = req.user
+        
+    const user = await userModel.findById(id)
+
+        if (user) {
+            user.avatarImage = avatarImage
+            user.setAvatar = true
+            try {
+             await user.save()
+             res.status(200).json({message: "Successfully updated avatar"})
+            }
+            catch (err) {
+            res.status(400).json({message: err.message})
+            }
+            
+           
+        }  
+        else { 
+            return res.status(404).json ({message: "User not found"})
+        } 
+}
+
+
 module.exports.reg = async (req, res)=> {
  
     const {nickname, email, password} = req.body

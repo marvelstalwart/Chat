@@ -3,6 +3,7 @@ import './App.css';
 import Signup from './components/reg/Signup';
 import Signin from './components/reg/Signin'
 import Home from './components/pages/Home';
+import SetAvatar from './components/reg/SetAvatar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
@@ -13,6 +14,7 @@ function App() {
               <Routes>
               <Route path='/' exact element={<Home/>}/>
                 <Route path='/sign-up' element={<Signup/>}/>
+                  <Route path='/setAvatar' element={<SetAvatar/>}/>
                 <Route path='/sign-in' element={<Signin/>}/>
 
               </Routes>

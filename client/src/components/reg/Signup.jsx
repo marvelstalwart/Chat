@@ -41,7 +41,7 @@ let schema = yup.object().shape({
         swal({type: 'success', text:"Success", confirmButtonText:"Proceed", showCancelButton:true})
           .then(function(){
               
-              navigate("/")
+              navigate("/setAvatar")
           })
       }
       dispatch(reset)
