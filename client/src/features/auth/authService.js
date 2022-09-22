@@ -24,6 +24,9 @@ const setAvatar = async(payload, token) => {
             Authorization: `Bearer ${token}`
         }
     }
+    
+
+
         const response = await axios.post(AVATARURL, payload, config)
             return response.data
 
@@ -31,11 +34,14 @@ const setAvatar = async(payload, token) => {
 }
 const getAvatars = async ()=> {
     const data = [];
+    let count = 0
     for (let i=0; i<4; i++) {
         const image = await axios.get(`${AVATARAPI}/${Math.round(Math.random()*1000)}`)
         const buffer = new Buffer(image.data)
+        count+=1
         data.push(buffer.toString("base64"))
     }
+    console.log(count)
     return data
 
 }

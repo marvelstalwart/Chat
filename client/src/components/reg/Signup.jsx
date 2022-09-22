@@ -44,7 +44,10 @@ let schema = yup.object().shape({
               navigate("/setAvatar")
           })
       }
-      dispatch(reset)
+     
+     return ()=> {
+      dispatch(reset())
+     } 
 
 
     },[isError, isSuccess])

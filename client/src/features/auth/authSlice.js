@@ -38,8 +38,16 @@ export const login = createAsyncThunk('auth/login', async(payload, thunkAPI)=> {
 export const setAvatar = createAsyncThunk("auth/setAvatar", async(payload, thunkAPI)=> {
               
         try {
+            const avatar = thunkAPI.getState().auth.avatars
+
+            const data = {
+                id : thunkAPI.getState().auth.user._id,
+                avatar: avatar[payload]
+            }
+
             const token = thunkAPI.getState().auth.user.token
-            return await authService.setAvatar(payload, token)
+
+            return await authService.setAvatar(data, token)
         }
         catch(err) {
             const message = err.response && err.response.data && err.response.data.message || err.message || err.toString()
@@ -101,6 +109,7 @@ export const authSlice = createSlice({
             state.isError = true
             state.message = action.payload
         })
+
         .addCase(setAvatar.pending, (state)=> {
             state.isLoading= true
 
@@ -108,7 +117,7 @@ export const authSlice = createSlice({
         .addCase(setAvatar.fulfilled, (state, action)=> {
             state.isLoading= false
             state.isSuccess = true
-            state.user = action.payload
+            state.message = action.payload
         })
         .addCase(setAvatar.rejected, (state, action)=> {
             state.isLoading = false
@@ -121,7 +130,7 @@ export const authSlice = createSlice({
         })
         .addCase(getAvatars.fulfilled, (state, action)=> {
             state.isLoading = false
-            state.isSuccess = true
+            
             state.avatars = action.payload
 
         })

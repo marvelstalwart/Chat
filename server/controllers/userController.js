@@ -21,26 +21,40 @@ module.exports.getUsers = async(req,res)=> {
 }
 
 module.exports.setAvatar = async (req, res)=> {
-    const {id, avatarImage} = req.user
-        
-    const user = await userModel.findById(id)
+        try {
 
-        if (user) {
-            user.avatarImage = avatarImage
-            user.setAvatar = true
-            try {
-             await user.save()
-             res.status(200).json({message: "Successfully updated avatar"})
-            }
-            catch (err) {
-            res.status(400).json({message: err.message})
-            }
+        
+        const {id, avatar} = req.body
+        const updateData = await userModel.findByIdAndUpdate(id, {
+            isAvatarImageSet: true,
+            avatarImage: avatar
+        })
+        
+       
+        return res.status(200).json(updateData)
+    }
+    catch(err){
+        return res.status(400).json({message: err.message})
+    }
+
+    // const user = await userModel.findById(id)
+
+    //     if (user) {
+    //         user.avatarImage = avatarImage
+    //         user.setAvatar = true
+    //         try {
+    //          await user.save()
+    //          res.status(200).json({message: "Successfully updated avatar"})
+    //         }
+    //         catch (err) {
+    //         res.status(400).json({message: err.message})
+    //         }
             
            
-        }  
-        else { 
-            return res.status(404).json ({message: "User not found"})
-        } 
+    //     }  
+    //     else { 
+    //         return res.status(404).json ({message: "User not found"})
+    //     } 
 }
 
 
