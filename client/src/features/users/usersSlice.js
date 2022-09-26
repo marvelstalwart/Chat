@@ -5,7 +5,10 @@ const initialState = {
     isLoading: false,
     isError: false,
     isSuccess: false,
-    message: ''
+    message: '',
+    messages: null,
+    selectedUser:null,
+    chat : null
 }
 
 export const getUsers = createAsyncThunk("users/get", async(_, thunkAPI)=> {
@@ -32,7 +35,11 @@ export const usersSlice = createSlice({
             state.isError= false
             state.isSuccess= true
            state.message= ''
-        } 
+        },
+        changeChat: (state, action)=> {
+            state.selectedUser= action.payload
+            console.log(state.selectedUser)
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -56,5 +63,5 @@ export const usersSlice = createSlice({
     }
     
 })
-export const {reset} = usersSlice.actions;
+export const {reset, changeChat} = usersSlice.actions;
 export default usersSlice.reducer;

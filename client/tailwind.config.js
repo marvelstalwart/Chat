@@ -5,6 +5,9 @@ module.exports = {
     extend: {
       colors: {
         "blue": "#00BFFF"
+      },
+      fontFamily: {
+        'lily': ['Lily Script One, cursive']
       }
     },
   },
