@@ -50,7 +50,7 @@ export const setAvatar = createAsyncThunk("auth/setAvatar", async(payload, thunk
             return await authService.setAvatar(data, token)
         }
         catch(err) {
-            const message = err.response && err.response.data && err.response.data.message || err.message || err.toString()
+            const message = (err.response && err.response.data && err.response.data.message) || err.message || err.toString()
             return thunkAPI.rejectWithValue(message)
         }
 
@@ -63,7 +63,7 @@ export const getAvatars = createAsyncThunk("auth/getAvatars", async(_,thunkAPI)=
         return await authService.getAvatars()
     }
     catch(err) {
-        const message = err.response && err.response.data && err.response.data.message || err.message ||err.toString()
+        const message = (err.response && err.response.data && err.response.data.message )|| err.message ||err.toString()
         return thunkAPI.rejectWithValue(message)
     }
 

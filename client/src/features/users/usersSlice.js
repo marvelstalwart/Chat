@@ -8,7 +8,7 @@ const initialState = {
     message: '',
     messages: null,
     selectedUser:null,
-    chat : null
+    
 }
 
 export const getUsers = createAsyncThunk("users/get", async(_, thunkAPI)=> {
@@ -17,7 +17,7 @@ export const getUsers = createAsyncThunk("users/get", async(_, thunkAPI)=> {
         return await usersService.getUsers(token)
     }
     catch(err) {
-        const message = err.response && err.response.data && err.response.data.message||
+        const message = (err.response && err.response.data && err.response.data.message)||
         err.message ||err.toString()
         return thunkAPI.rejectWithValue(message)
     }
@@ -38,7 +38,7 @@ export const usersSlice = createSlice({
         },
         changeChat: (state, action)=> {
             state.selectedUser= action.payload
-            console.log(state.selectedUser)
+            
         }
     },
     extraReducers: (builder) => {
