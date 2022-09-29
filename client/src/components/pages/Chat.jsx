@@ -6,16 +6,21 @@ import { useSelector } from 'react-redux'
 import { newMessage } from '../../features/messages/messageSlice'
 import { useDispatch } from 'react-redux'
 import { getChats } from '../../features/messages/messageSlice'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { useEffect } from 'react'
-export default function Chat() {
+import {io} from "socket.io-client"
+import { resetChat } from '../../features/users/usersSlice'
+import { useEffect, useRef } from 'react'
+import { reset, setId } from '../../features/messages/messageSlice'
+export default function Chat({socket, selectedUser}) {
     let navigate = useNavigate()
     let dispatch = useDispatch();
+   let location = useLocation();
+  
     const [emojiPicker, setEmojiPicker] = useState(false)
-    const {selectedUser} =useSelector((state)=> state.users)
+   
     const {user} = useSelector((state)=> state.auth)
-    const {messages} = useSelector((state)=> state.messages)
+    const {messages, chats} = useSelector((state)=> state.messages)
     const [message, setMessage] = useState("")
     
  
@@ -24,8 +29,8 @@ export default function Chat() {
     }
 
     useEffect(()=> {
+           
             dispatch(getChats({from:user._id, to: selectedUser._id}))
-            
     },[messages])
     const addEmoji = ( emoji)=> {
        
@@ -40,7 +45,12 @@ export default function Chat() {
              console.log(selectedUser._id, user._id, message)
 
                  dispatch(newMessage({from:user._id, to: selectedUser._id, message: message}))
-                setMessage("");
+                socket.current.emit("send-msg", {
+                    to: selectedUser._id,
+                    from: user._id,
+                    message: message
+                })
+                 setMessage("");
         }
         else {
             setMessage("");
@@ -53,17 +63,20 @@ export default function Chat() {
     <div className=" h-screen w-full flex flex-col">
              
         <div className='header z-10 flex w-full items-center p-4 gap-2 h-38 bg-white'>
-            <div onClick={()=> navigate(-1)}><FontAwesomeIcon icon={faArrowLeft}/></div>
+    <div onClick={()=> dispatch(resetChat())}><FontAwesomeIcon icon={faArrowLeft}/></div>
             <img  className='max-w-[3rem]' src={`data: image/svg+xml;base64,${ selectedUser && selectedUser.avatarImage}`}/>
             <div className=''>{selectedUser && selectedUser.nickname}</div>
             
          </div>
-             <div className='bg-gray-100 flex-1 relative w-full'>
-                    <div className='p-2'>
-                         <div className=' w-fit h-fit bg-white p-5 rounded-lg'>
-                             Maguire today!
-                         </div>
-                    </div>
+             <div className='bg-gray-100 flex-1 relative w-full overflow-y-scroll'>
+                    {chats && chats.map((chat, index)=> {
+                        return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} w-full`}>
+                        <div className=' w-fit h-fit bg-white p-3 rounded-lg'>
+                            {chat.message}
+                        </div>
+                   </div>
+                    })}
+                    
                 
 
     <div className='absolute bottom-0 w-full px-5 pb-5'>

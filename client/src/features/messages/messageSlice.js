@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import messageService from "./messageService";
 
 const initialState = {
+    chat: null,
     chats:null,
     from: "",
     to: "",
@@ -30,8 +31,10 @@ export const newMessage = createAsyncThunk("message/new", async (payload, thunkA
 })
 
 export const getChats= createAsyncThunk("chat/get", async(payload, thunkAPI)=> {
+   
     try {
         const {token } = thunkAPI.getState().auth.user
+        
         return await messageService.getChat(payload, token)
     }
     catch(err){
@@ -52,6 +55,9 @@ reducers: {
             state.isLoading=""
             state.isError = ""
             state.isSuccess=""
+        },
+        setId: (state, action)=> {
+            state.chat= action.payload
         }
 
 
@@ -78,8 +84,8 @@ extraReducers: (builder)=> {
     .addCase(getChats.fulfilled, (state,action)=> {
         state.isLoading = false
         state.isSuccess = true
-        // state.chats= action.payload
-        console.log(action)
+        state.chats= action.payload
+       
     })
     .addCase(getChats.rejected, (state, action)=> {
         state.isLoading = false
@@ -92,5 +98,5 @@ extraReducers: (builder)=> {
 
     
 })
-export const {reset} = messageSlice.actions;
+export const {reset, setId} = messageSlice.actions;
 export default messageSlice.reducer;

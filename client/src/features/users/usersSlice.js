@@ -36,6 +36,9 @@ export const usersSlice = createSlice({
             state.isSuccess= true
            state.message= ''
         },
+        resetChat: (state)=> {
+            state.selectedUser =null
+        },
         changeChat: (state, action)=> {
             state.selectedUser= action.payload
             
@@ -63,5 +66,5 @@ export const usersSlice = createSlice({
     }
     
 })
-export const {reset, changeChat} = usersSlice.actions;
+export const { changeChat, resetChat} = usersSlice.actions;
 export default usersSlice.reducer;
