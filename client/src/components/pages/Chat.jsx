@@ -5,7 +5,7 @@ import { faArrowLeft, faPaperPlane, faFaceSmile } from '@fortawesome/free-solid-
 import { useSelector } from 'react-redux'
 import { newMessage } from '../../features/messages/messageSlice'
 import { useDispatch } from 'react-redux'
-import { getChats } from '../../features/messages/messageSlice'
+import { getChat } from '../../features/messages/messageSlice'
 import { Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import {io} from "socket.io-client"
@@ -20,7 +20,7 @@ export default function Chat({socket, selectedUser}) {
     const [emojiPicker, setEmojiPicker] = useState(false)
    
     const {user} = useSelector((state)=> state.auth)
-    const {messages, chats} = useSelector((state)=> state.messages)
+    const {messages, chat} = useSelector((state)=> state.messages)
     const [message, setMessage] = useState("")
     
  
@@ -30,7 +30,7 @@ export default function Chat({socket, selectedUser}) {
 
     useEffect(()=> {
            
-            dispatch(getChats({from:user._id, to: selectedUser._id}))
+            dispatch(getChat({from:user._id, to: selectedUser._id}))
     },[messages])
     const addEmoji = ( emoji)=> {
        
@@ -44,7 +44,7 @@ export default function Chat({socket, selectedUser}) {
         if (message.length> 0){
              console.log(selectedUser._id, user._id, message)
 
-                 dispatch(newMessage({from:user._id, to: selectedUser._id, message: message}))
+                 dispatch(newMessage({from:user._id, to: selectedUser._id, userPic: selectedUser.avatarImage, message: message}))
                 socket.current.emit("send-msg", {
                     to: selectedUser._id,
                     from: user._id,
@@ -69,13 +69,12 @@ export default function Chat({socket, selectedUser}) {
             
          </div>
              <div className='bg-gray-100 flex-1 relative w-full overflow-y-scroll'>
-                    {chats && chats.map((chat, index)=> {
+                    {chat && chat.map((chat, index)=> {
                         return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} w-full`}>
                         <div className=' w-fit h-fit bg-white p-3 rounded-lg'>
                             {chat.message}
                         </div>
-                   </div>
-                    })}
+                   </div> })}
                     
                 
 

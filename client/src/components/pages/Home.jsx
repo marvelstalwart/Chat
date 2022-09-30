@@ -10,6 +10,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import defaultImg from "../../assets/img/default.png"
 import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
+import { getChats } from '../../features/messages/messageSlice';
 export default function Home() {
   const dispatch = useDispatch();
 
@@ -23,6 +24,7 @@ export default function Home() {
        
               socket.emit("add-user", user._id)
         dispatch(getUsers())
+       
       }
    
       if (isError) {
@@ -31,17 +33,15 @@ export default function Home() {
       }
       
  
-  },[isError, isSuccess, dispatch, user])
+  },[isError, dispatch, user])
+  let count = 0
+  useEffect(()=> {
+    dispatch(getChats())
+    count+=1
+    console.log(count)
+  },[])
   const selectedChat = (user)=> {
     dispatch(changeChat(user))
-    
-    // navigate("/chat", {
-    //   state: {
-    //     user,
-    //     socket
-    //   }
-    // })
-
 
 
   }
@@ -80,14 +80,33 @@ export default function Home() {
              </section>
         
              <hr ></hr>
-             <section>
+             <section title='chats' >
                 
                   
-                  
-                     {/* // <div className='p-2 font-bold  h-full flex items-center justify-center'>
-                   // <div className=''>You do not have any Chats yet!
-                   // </div>
-                   // </div> */}
+                  {
+                    chats && chats.length> 0? 
+                    chats.map((chat)=> {
+                      
+                      return <div onClick={()=>console.log(chat._id)} className='m-3 flex gap-2 items-center' key={chat._id}>
+                       <div className='w-[3rem]'><img  className='max-w-[3rem]'  src={`data: image/svg+xml;base64,${chat.text.userPic}`}/></div> 
+                       <div>
+                        <div>Name</div>
+                       <div className=''>{chat.text.message}</div>
+
+                       </div>
+                       
+                       </div>
+                     
+                  })
+                        
+                      
+                    :
+                    <div className='p-2 font-bold  h-full flex items-center justify-center'>
+                    <div className=''>You do not have any Chats yet!
+                    </div>
+                    </div>
+                  }
+                      
                
              
              </section>

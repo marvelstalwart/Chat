@@ -30,7 +30,7 @@ export const newMessage = createAsyncThunk("message/new", async (payload, thunkA
 
 })
 
-export const getChats= createAsyncThunk("chat/get", async(payload, thunkAPI)=> {
+export const getChat= createAsyncThunk("chat/get", async(payload, thunkAPI)=> {
    
     try {
         const {token } = thunkAPI.getState().auth.user
@@ -41,6 +41,21 @@ export const getChats= createAsyncThunk("chat/get", async(payload, thunkAPI)=> {
         const message = (err.response && err.response.data && err.response.data.message)|| err.message ||err.toString()
         return thunkAPI.rejectWithValue(message)
     }
+})
+
+export const getChats = createAsyncThunk("chats/get", async(_, thunkAPI)=> {
+        try {
+            const {token} = thunkAPI.getState().auth.user
+            
+            const id = thunkAPI.getState().auth.user
+            
+            return await messageService.getChats(id, token)
+        }
+        catch(err){
+            const message = (err.response && err.response.data && err.response.data.message)||err.message || err.toString()
+                return thunkAPI.rejectWithValue(message)
+        }
+
 })
 
 export const messageSlice = createSlice({
@@ -77,6 +92,22 @@ extraReducers: (builder)=> {
         state.isError = true
         state.response = action.payload
     })
+    .addCase(getChat.pending, (state)=> {
+        state.isLoading = true
+
+    })
+    .addCase(getChat.fulfilled, (state,action)=> {
+        state.isLoading = false
+        state.isSuccess = true
+        state.chat= action.payload
+       
+    })
+    .addCase(getChat.rejected, (state, action)=> {
+        state.isLoading = false
+        state.isError = true
+        state.response = action.payload
+
+    })
     .addCase(getChats.pending, (state)=> {
         state.isLoading = true
 
@@ -93,6 +124,7 @@ extraReducers: (builder)=> {
         state.response = action.payload
 
     })
+
     
 }
 

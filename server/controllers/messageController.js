@@ -1,12 +1,15 @@
 const messageModel = require("../models/messageModel")
+const userModel = require("../models/userModel")
 module.exports.addMessage = (req, res)=> {
 
-    const {from, to, message} = req.body
+    const {from, to, message, userPic, nickname} = req.body
     if (from && to && message) {
         const newMessage = new messageModel ({
             users: [from, to],
+            to,
             sender: from,
-            message: message 
+            message, 
+            userPic
     })
     newMessage.save()
     .then((message)=> {
@@ -22,7 +25,46 @@ module.exports.addMessage = (req, res)=> {
     }
 
 
-}
+} 
+    module.exports.getChats= async (req,res)=> {
+        const {currentUserId} = req.body
+        if (currentUserId) {
+            const currentUserMessages= await messageModel.aggregate([
+                {$match: {users: currentUserId}},
+                {
+                    $group: {
+                        _id:"$to",
+                        text: {$last: "$$ROOT"},
+                        
+                         
+                        
+                    },
+                    
+                }
+               
+            ]) 
+
+        //  const currentUserMessages= await messageModel.find({users: {$in:currentUserId} }) 
+
+          
+            
+            res.status(200).json(currentUserMessages)
+        //     let chats = await messageModel.find({
+        //         users: user
+        //     })
+        //     if (chats){
+        //         return res.status(200).json(chats)
+
+        //     }
+        //     else {
+        //         return res.status(404).json("Not found")
+        //     }
+         
+        // }
+        // else {
+        //     return res.status(400).json({message: `No specified user id`})
+        }
+    }
 
 module.exports.getMessages= async (req, res)=> {
     const {from, to} = req.body
