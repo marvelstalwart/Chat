@@ -17,6 +17,9 @@ const login = async (payload)=> {
     
     return response.data
 }
+const logout = ()=> {
+    return localStorage.removeItem('user')
+}
 
 const setAvatar = async(payload, token) => {
     const config = {
@@ -48,6 +51,7 @@ const getAvatars = async ()=> {
 const authService = {
     register,
     login,
+    logout,
     setAvatar,
     getAvatars
 }

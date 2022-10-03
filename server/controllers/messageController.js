@@ -1,16 +1,17 @@
 const messageModel = require("../models/messageModel")
 const userModel = require("../models/userModel")
-module.exports.addMessage = (req, res)=> {
+module.exports.addMessage = async (req, res)=> {
 
     const {from, to, message, userPic, nickname} = req.body
     if (from && to && message) {
-        const newMessage = new messageModel ({
+        let newMessage = new messageModel ({
             users: [from, to],
             to,
             sender: from,
             message, 
-            userPic
+            
     })
+  
     newMessage.save()
     .then((message)=> {
         res.status(201).json(`Successfully created ${message}`)
@@ -29,47 +30,88 @@ module.exports.addMessage = (req, res)=> {
     module.exports.getChats= async (req,res)=> {
         const {currentUserId} = req.body
         if (currentUserId) {
-            const currentUserMessages= await messageModel.aggregate([
-                {$match: {users: currentUserId}},
-                {
-                    $group: {
-                        _id:"$to",
-                        text: {$last: "$$ROOT"},
-                        
+         let  currentUserMessages= await messageModel.aggregate([
+                //Check for any chat with the current User Id
+                 {$match: {users: currentUserId}},
+
+                 //Select the fields we want to retain
+                 {
+                     "$project": {
+                         to: 1,
+                         sender:1,
+                         message:1,
+                         createdAt: 1,
+                         users: 1
+ 
+                     }
+                 },
+                 //Destructure the users array and sort it so a/b or b/a returns a single array
+                 {
+ 
+                     $unwind: "$users"
+                 },
+                 {
+                     $sort: {"users": 1}
+                 }, 
+                 {
+                     $group: {
+                         _id: "$_id",
+                         "users": {
+                             $push: "$users"
+                         },
+                         "sender": {
+                             "$first": "$sender"
+                         },
+                         "to": {
+                             "$first": "$to"
+                         },
+                         "message": {
+                             "$first" : "$message"
+                         },
+                         "timeStamp": {
+                             "$first" : "$createdAt"
+                         }
+                     }
+                 },
+                 {
+                     "$sort": {
+                         "timeStamp": -1
+                     }
+                 },
+                 //Group by the sorted array
+                 {
+                     "$group": {
+                         "_id": "$users",
+                         "sender": {
+                             "$first": "$sender"
+                         },
                          
-                        
-                    },
-                    
-                }
-               
-            ]) 
-
-        //  const currentUserMessages= await messageModel.find({users: {$in:currentUserId} }) 
-
-          
-            
+                         "to": {
+                             "$first": "$to"
+                         },
+                         "message": {
+                             "$first": "$message"
+                         },
+                         "timeStamp": {
+                             "$first": "$timeStamp"
+                         }
+ 
+                     }
+                 }
+                 
+ 
+                 
+             ])
+             currentUserMessages = await messageModel.populate(currentUserMessages, {path: "sender", select: 'nickname avatarImage'})
+                 currentUserMessages = await messageModel.populate(currentUserMessages, {path: "to", select: 'nickname avatarImage'})
             res.status(200).json(currentUserMessages)
-        //     let chats = await messageModel.find({
-        //         users: user
-        //     })
-        //     if (chats){
-        //         return res.status(200).json(chats)
-
-        //     }
-        //     else {
-        //         return res.status(404).json("Not found")
-        //     }
-         
-        // }
-        // else {
-        //     return res.status(400).json({message: `No specified user id`})
-        }
+          }
     }
 
 module.exports.getMessages= async (req, res)=> {
     const {from, to} = req.body
     
-    if (from && to) {
+    if (from && to) { 
         const chatMessages= await messageModel.find({
             users: {
                 $all: [from, to]

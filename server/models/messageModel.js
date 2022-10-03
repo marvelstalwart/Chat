@@ -10,9 +10,10 @@ const messageSchema = new Schema ({
 
  message: {type: String, required: true},
  users: {type: Array, required:true},
-sender: {type: String, required: true},
-to: {type: String, required: true},
-userPic: {type:String, required:true },
+ 
+sender: {type: Schema.Types.ObjectId, ref: "Users"},
+to: {type: Schema.Types.ObjectId, ref: "Users"},
+
 
 
 }

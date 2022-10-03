@@ -6,14 +6,15 @@ import swal from 'sweetalert2';
 import io from "socket.io-client"
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import defaultImg from "../../assets/img/default.png"
 import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
+import { logout } from '../../features/auth/authSlice';
 import { getChats } from '../../features/messages/messageSlice';
 export default function Home() {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const socket=io.connect('http://localhost:5000')
   const {user} = useSelector(state=> state.auth)
   const { users, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
@@ -34,26 +35,34 @@ export default function Home() {
       
  
   },[isError, dispatch, user])
-  let count = 0
+  
   useEffect(()=> {
     dispatch(getChats())
-    count+=1
-    console.log(count)
+    
   },[])
-  const selectedChat = (user)=> {
-    dispatch(changeChat(user))
 
-
-  }
+  
+ //Get specific chat from chats by filtering the id of each chat group from users
  
+const handleLogout = ()=>{
+  dispatch(logout())
+  navigate("/sign-in")
+}
   return (
     <>
           {!selectedUser?
              <div className='text-gray-700 flex flex-col w-full h-full gap-1'>
      
-             <section title='logo'><h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1></section>
+             <section title='logo' className='flex justify-between items-center'>
+              <h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1>
+              <div>{console.log(user)}
+                  <img  src={`data: image/svg+xml;base64,${user.avatarImage}`} />
+                 <FontAwesomeIcon icon={faRightFromBracket} className="p-2 cursor-pointer"/>
+
+              </div>
+                           </section>
              <section title='search-bar' className='px-2  relative flex items-center'>
-             < FontAwesomeIcon icon={faMagnifyingGlass} className="absolute px-2 pl-3 pointer-events-none" color="gray" />
+             < FontAwesomeIcon onClick={()=>handleLogout()} icon={faMagnifyingGlass} className="absolute px-2 pl-3 pointer-events-none" color="gray" />
                <input className='bg-gray-200 w-full p-3 px-8 rounded-3xl' type="text" placeholder='Search'/>
         
              </section>
@@ -61,14 +70,14 @@ export default function Home() {
              <hr ></hr>
              
              
-           <section title='users' className='flex h-32 w-full overflow-x-hidden '>
+           <section title='users' className='flex h-15 w-full overflow-x-hidden '>
         
           
              {users && users.map ((user, index)=> (
-               <div  className="flex flex-col p-3 items-center " key={index} onClick={()=>selectedChat(user)}>
+               <div  className="flex flex-col p-3 items-center " key={index} onClick={()=>dispatch(changeChat(user))}>
                  
                  
-                 <img className='max-w-[4rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="Avatar"/>
+                 <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="Avatar"/>
                  <h1 className='font-lgtext-xs'>{user.nickname}</h1>
                  
                  </div>
@@ -81,21 +90,25 @@ export default function Home() {
         
              <hr ></hr>
              <section title='chats' >
-                
+             {console.log(chats)}
                   
                   {
                     chats && chats.length> 0? 
+                    
                     chats.map((chat)=> {
                       
-                      return <div onClick={()=>console.log(chat._id)} className='m-3 flex gap-2 items-center' key={chat._id}>
-                       <div className='w-[3rem]'><img  className='max-w-[3rem]'  src={`data: image/svg+xml;base64,${chat.text.userPic}`}/></div> 
-                       <div>
-                        <div>Name</div>
-                       <div className=''>{chat.text.message}</div>
-
-                       </div>
+                        return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center' key={chat._id}>
+                        <div className='w-[3rem]'><img  className='max-w-[3rem]' src={`data: image/svg+xml;base64, ${chat.to._id=== user._id? chat.sender.avatarImage : chat.to.avatarImage}`} /></div> 
+                        <div>
+                         <div>{chat.to._id=== user._id? chat.sender.nickname : chat.to.nickname}</div>
+                        <div className=''>{chat.message}</div>
+ 
+                        </div>
+                        
+                        </div>
+                      
+                      
                        
-                       </div>
                      
                   })
                         
@@ -115,7 +128,8 @@ export default function Home() {
             
              </div>
           :
-          <Chat selectedUser={selectedUser} socket={socket}/>
+       
+         <Chat selectedUser={selectedUser} socket={socket}/>
         }
    
     </>
