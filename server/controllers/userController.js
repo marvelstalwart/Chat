@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 module.exports.getUsers = async(req,res)=> {
        
-    try {const users = await userModel.find()
+try {const users = await userModel.find({_id: {$ne: req.body._id}})
         if(users) {
             res.status(200).json(users)
         }
@@ -17,6 +17,49 @@ module.exports.getUsers = async(req,res)=> {
             res.status(400).json(err.message)
         }
        
+
+}
+module.exports.getUser = async(req,res)=> {
+
+    const {_id} = req.body
+    try {
+        const user = await userModel.find({_id: _id})
+        if (user) {
+            res.status(200).json(user)
+        }
+        else {
+            res.status(404).json({message: "Not found"})
+        }
+    }
+    catch(err){
+        res.status(400).json({message: err.message})
+    }
+
+}
+
+module.exports.updateUser = async(req, res)=> {
+        
+        const {_id, username, email, about} = req.body
+        
+        if (username) {
+             userModel.findByIdAndUpdate(_id, {nickname: username})
+            .then((result)=> res.status(200).json(result))
+            .catch((err)=> res.status(400).json({message: err.message}))
+
+        }
+        else if (email) {
+            userModel.findByIdAndUpdate(_id, {email})
+            .then((result)=> res.status(200).json(result))
+            .catch((err)=> res.status(400).json({message: err.message}))
+ 
+        }
+        else if (about) {
+            userModel.findByIdAndUpdate(_id, {about})
+            .then((result)=> res.status(200).json(result))
+            .catch((err)=> res.status(400).json({message: err.message}))
+ 
+        }
+
 
 }
 
@@ -37,24 +80,6 @@ module.exports.setAvatar = async (req, res)=> {
         return res.status(400).json({message: err.message})
     }
 
-    // const user = await userModel.findById(id)
-
-    //     if (user) {
-    //         user.avatarImage = avatarImage
-    //         user.setAvatar = true
-    //         try {
-    //          await user.save()
-    //          res.status(200).json({message: "Successfully updated avatar"})
-    //         }
-    //         catch (err) {
-    //         res.status(400).json({message: err.message})
-    //         }
-            
-           
-    //     }  
-    //     else { 
-    //         return res.status(404).json ({message: "User not found"})
-    //     } 
 }
 
 
@@ -116,11 +141,12 @@ module.exports.loginUser = async (req, res)=> {
                     if (pass) {
                         res.status(200).json({
                             _id: user.id,
-                            name: user.name,
+                            name: user.nickname,
                             email: user.email,
                             password: password,
-                           
-                            token: generateToken(user.id)
+                            avatarImage: user.avatarImage,
+                            token: generateToken(user.id),
+                            about: user.about
                         })
                     }
                     else {

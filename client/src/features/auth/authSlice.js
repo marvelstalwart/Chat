@@ -37,7 +37,7 @@ export const login = createAsyncThunk('auth/login', async(payload, thunkAPI)=> {
 export const logout = createAsyncThunk("auth/logout", async(_, thunkAPI)=> {
 
         try {
-            return await authService.logout()
+            return authService.logout()
         }
         catch(err){
             const message = (err.response && err.response.data && err.response.data.message)||err.message
@@ -66,6 +66,22 @@ export const setAvatar = createAsyncThunk("auth/setAvatar", async(payload, thunk
 
 
 } )
+
+export const updateUser = createAsyncThunk("auth/updateUser", async(payload, thunkAPI)=> {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+       
+                return await authService.updateUser(payload, token)
+
+        }
+        catch (err) {
+            const message = (err.response && err.response.data && err.response.data.message) || err.message || err.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+
+
+
+})
 
 export const getAvatars = createAsyncThunk("auth/getAvatars", async(_,thunkAPI)=> {
 
@@ -125,9 +141,10 @@ export const authSlice = createSlice({
             state.isLoading=true
         })
         .addCase(logout.fulfilled, (state, action)=> {
-            state.isLoading = false
-            state.isSuccess = true
+            
             state.user = null
+            
+
         })
         .addCase(logout.rejected,(state, action)=> {
             state.isLoading = false
@@ -139,6 +156,7 @@ export const authSlice = createSlice({
             state.isLoading= true
 
         })
+
         .addCase(setAvatar.fulfilled, (state, action)=> {
             state.isLoading= false
             state.isSuccess = true
@@ -148,6 +166,19 @@ export const authSlice = createSlice({
             state.isLoading = false
             state.isError = true
             state.message= action.payload
+        })
+        .addCase(updateUser.pending, (state)=> {
+            state.isLoading = true
+        })
+        .addCase(updateUser.fulfilled, (state, action)=> {
+            state.isLoading = false
+            state.isSuccess = true
+            state.user = action.payload
+        })
+        .addCase(updateUser.rejected, (state, action)=> {
+            state.isLoading = false
+            state.isError = true
+            state.message = action.payload
         })
         .addCase(getAvatars.pending, (state)=> {
             state.isLoading=true

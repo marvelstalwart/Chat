@@ -8,7 +8,8 @@ const userSchema = new Schema ({
     email: { type: String, required: true},
     password: {type: String, required: true},
     isAvatarImageSet: {type: Boolean, default:false},
-    avatarImage: {type: String, default: ""}
+    avatarImage: {type: String, default: ""},
+    about: {type: String, default: "Hi, I'm on Yarn!"}
     
 }, {
     timestamps: true,

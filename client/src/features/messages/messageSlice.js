@@ -73,6 +73,9 @@ reducers: {
         },
         setId: (state, action)=> {
             state.chat= action.payload
+        },
+        addMessage: (state, action)=> {
+            state.chat = action.payload
         }
 
 
@@ -130,5 +133,5 @@ extraReducers: (builder)=> {
 
     
 })
-export const {reset, setId} = messageSlice.actions;
+export const {reset, setId, addMessage} = messageSlice.actions;
 export default messageSlice.reducer;

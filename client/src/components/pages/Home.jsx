@@ -1,30 +1,34 @@
-import React from 'react'
+import {React, useState} from 'react'
 import { useEffect, useRef } from 'react';
 import { useSelector,useDispatch } from 'react-redux'
 import { getUsers } from '../../features/users/usersSlice';
 import swal from 'sweetalert2';
-import io from "socket.io-client"
+import MyProfile from './profile/MyProfile';
+import { io } from 'socket.io-client';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import defaultImg from "../../assets/img/default.png"
 import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
-import { logout } from '../../features/auth/authSlice';
+import { logout, reset } from '../../features/auth/authSlice';
 import { getChats } from '../../features/messages/messageSlice';
 export default function Home() {
+  const socket = useRef()
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const socket=io.connect('http://localhost:5000')
+ 
   const {user} = useSelector(state=> state.auth)
   const { users, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
- 
+  const [showProfile, setShowProfile] = useState(false)
   const {messages, chats} = useSelector((state)=> state.messages)
+  const [searchValue, setSearchValue] = useState()
   useEffect(()=> {
       if (user) {
-       
-              socket.emit("add-user", user._id)
-        dispatch(getUsers())
+        socket.current = io("http://localhost:5000")
+          socket.current.emit("newUser", user._id)
+             
+        dispatch(getUsers(user))
        
       }
    
@@ -33,6 +37,9 @@ export default function Home() {
 
       }
       
+      return ()=> {
+        dispatch(reset())
+      }
  
   },[isError, dispatch, user])
   
@@ -40,7 +47,8 @@ export default function Home() {
     dispatch(getChats())
     
   },[])
-
+console.log(chats)
+  
   
  //Get specific chat from chats by filtering the id of each chat group from users
  
@@ -48,22 +56,27 @@ const handleLogout = ()=>{
   dispatch(logout())
   navigate("/sign-in")
 }
+
+const handleSearch =(e)=> {
+  setSearchValue(e.target.value)
+  
+}
   return (
     <>
-          {!selectedUser?
+          {!selectedUser&& !showProfile?
              <div className='text-gray-700 flex flex-col w-full h-full gap-1'>
      
-             <section title='logo' className='flex justify-between items-center'>
+             <section title='logo' className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1>
-              <div>{console.log(user)}
-                  <img  src={`data: image/svg+xml;base64,${user.avatarImage}`} />
-                 <FontAwesomeIcon icon={faRightFromBracket} className="p-2 cursor-pointer"/>
-
+              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> navigate("/my-profile", {state:{user}})}>{console.log(user)}
+              <img className='w-[2rem] ' src={`data: image/svg+xml;base64,${user.avatarImage}`} />
+               
               </div>
+              
                            </section>
-             <section title='search-bar' className='px-2  relative flex items-center'>
+             <section title='search-bar' className='px-2 relative flex items-center'>
              < FontAwesomeIcon onClick={()=>handleLogout()} icon={faMagnifyingGlass} className="absolute px-2 pl-3 pointer-events-none" color="gray" />
-               <input className='bg-gray-200 w-full p-3 px-8 rounded-3xl' type="text" placeholder='Search'/>
+               <input onChange={handleSearch} className='bg-gray-200 w-full p-3 px-8 rounded-3xl outline-0' type="text" placeholder='Search'/>
         
              </section>
              <div className='p-2 font-bold'>Users</div>
@@ -90,7 +103,7 @@ const handleLogout = ()=>{
         
              <hr ></hr>
              <section title='chats' >
-             {console.log(chats)}
+             
                   
                   {
                     chats && chats.length> 0? 
@@ -128,8 +141,9 @@ const handleLogout = ()=>{
             
              </div>
           :
-       
-         <Chat selectedUser={selectedUser} socket={socket}/>
+        
+         <Chat selectedUser={selectedUser} socket={socket} />
+         
         }
    
     </>

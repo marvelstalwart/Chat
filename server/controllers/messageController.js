@@ -33,7 +33,11 @@ module.exports.addMessage = async (req, res)=> {
          let  currentUserMessages= await messageModel.aggregate([
                 //Check for any chat with the current User Id
                  {$match: {users: currentUserId}},
-
+                        {
+                            $addFields: {
+                                "messages": "$message"
+                            }
+                        },
                  //Select the fields we want to retain
                  {
                      "$project": {
@@ -41,7 +45,9 @@ module.exports.addMessage = async (req, res)=> {
                          sender:1,
                          message:1,
                          createdAt: 1,
-                         users: 1
+                         users: 1,
+                         messages: 1
+                      
  
                      }
                  },
@@ -68,6 +74,9 @@ module.exports.addMessage = async (req, res)=> {
                          "message": {
                              "$first" : "$message"
                          },
+                         "messages": {
+                            "$push" : "$message"
+                        },
                          "timeStamp": {
                              "$first" : "$createdAt"
                          }
@@ -92,6 +101,10 @@ module.exports.addMessage = async (req, res)=> {
                          "message": {
                              "$first": "$message"
                          },
+                         "messages": {
+                            "$push" : "$message"
+                        }
+                         ,
                          "timeStamp": {
                              "$first": "$timeStamp"
                          }
