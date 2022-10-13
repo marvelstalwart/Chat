@@ -4,6 +4,7 @@ import { useSelector,useDispatch } from 'react-redux'
 import { getUsers } from '../../features/users/usersSlice';
 import swal from 'sweetalert2';
 import MyProfile from './profile/MyProfile';
+import Peer from "simple-peer"
 import { io } from 'socket.io-client';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,7 +14,9 @@ import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
 import { logout, reset } from '../../features/auth/authSlice';
 import { getChats } from '../../features/messages/messageSlice';
+
 export default function Home() {
+
   const socket = useRef()
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -23,7 +26,17 @@ export default function Home() {
   const [showProfile, setShowProfile] = useState(false)
   const {messages, chats} = useSelector((state)=> state.messages)
   const [searchValue, setSearchValue] = useState()
+  //Voice Call States
+  
+  const myVideo = useRef()
+  const userVideo = useRef() 
+  const connectionRef = useRef()
+  const [stream, setStream] = useState()
+
+ 
+
   useEffect(()=> {
+
       if (user) {
         socket.current = io("http://localhost:5000")
           socket.current.emit("newUser", user._id)
@@ -44,11 +57,48 @@ export default function Home() {
   },[isError, dispatch, user])
   
   useEffect(()=> {
+
     dispatch(getChats())
     
   },[])
-console.log(chats)
+
+//   const answerCall = ()=> {
+
+//     console.log("Call Accepted")
+//     console.log("This is the stream"+ stream)
+//     const peer = new Peer({
+//         initiator: false,
+//         trickle:false,
+//         stream: stream
+//     })
   
+//     peer.on("signal", (data)=> {
+
+
+//         socket.current?.emit("answerCall", {
+//             signal: data,
+//             to: caller,
+          
+//         }) 
+//     })
+//     peer.on("stream", (stream)=> {
+       
+//         userVideo.current.srcObject = stream
+//     })
+//     peer.on("error", (err)=>
+//     {
+//         console.log(`There was an error: ${err}`)
+//     })
+  
+//     console.log(`Caller: ${caller} Caller Signal : ${callerSignal}`)
+//     peer.signal(callerSignal)
+   
+//     connectionRef.current=peer
+//     console.log("This is the peer"+ connectionRef.current)
+    
+//  }   
+
+
   
  //Get specific chat from chats by filtering the id of each chat group from users
  
@@ -68,7 +118,7 @@ const handleSearch =(e)=> {
      
              <section title='logo' className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1>
-              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> navigate("/my-profile", {state:{user}})}>{console.log(user)}
+              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> navigate("/my-profile", {state:{user}})}>
               <img className='w-[2rem] ' src={`data: image/svg+xml;base64,${user.avatarImage}`} />
                
               </div>
@@ -142,7 +192,7 @@ const handleSearch =(e)=> {
              </div>
           :
         
-         <Chat selectedUser={selectedUser} socket={socket} />
+         <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} setStream={setStream}/>
          
         }
    

@@ -62,8 +62,37 @@ global.onlineUsers = new Map()
         }
     })
        
-  
+        socket.on("callUser", (data)=> {
+            
+            const sendUserSocket = onlineUsers.get(data.userToCall)
+            if (sendUserSocket){
+               
+             
+                socket.to(sendUserSocket).emit("callUser", 
+               
+                {
 
+                    signal: data.signalData,
+                    from: data.from,
+                    name:data.name,
+                    avatar: data.avatar
+                   
+    
+                })
+            }
+           
+        })
+        socket.on("end-call", (data)=> {
+            const sendUserSocket = onlineUsers.get(data.userToCall) 
+            socket.to(sendUserSocket).emit("endCall")
+        })
+
+        socket.on("answerCall", (data)=> {
+            console.log(data.signal)
+            const sendUserSocket = onlineUsers.get(data.to)
+
+            socket.to(sendUserSocket).emit("callAccepted", data.signal)
+        })
 
     socket.on("typing", (data)=> {
     

@@ -1,6 +1,6 @@
 import axios from "axios"
 import { Buffer } from "buffer";
-import { socket } from "../users/usersSlice";
+
 const REGURL = "http://localhost:5000/api/users/register";
 const LOGINURL = "http://localhost:5000/api/users/login";
 const AVATARURL = "http://localhost:5000/api/users/setAvatar";
