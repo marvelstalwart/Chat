@@ -12,9 +12,13 @@ import { faMagnifyingGlass, faRightFromBracket } from '@fortawesome/free-solid-s
 import defaultImg from "../../assets/img/default.png"
 import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
+import { acceptCall,endCall, setStream, callAccepted, callEnded } from '../../features/socket/socketSlice';
 import { logout, reset } from '../../features/auth/authSlice';
 import { getChats } from '../../features/messages/messageSlice';
-
+import { incomingCall } from '../../features/socket/socketSlice';
+import CallNotification from './videoCall/CallNotification';
+import UserVideo from './videoCall/UserVideo';
+import MyVideo2 from './videoCall/MyVideo2';
 export default function Home() {
 
   const socket = useRef()
@@ -27,11 +31,12 @@ export default function Home() {
   const {messages, chats} = useSelector((state)=> state.messages)
   const [searchValue, setSearchValue] = useState()
   //Voice Call States
-  
+  const {calling, callAccepted, receivingCall, callVideo, callScreen, callEnded, caller, callerSignal, stream} = useSelector((state)=> state.socket)
+   
   const myVideo = useRef()
   const userVideo = useRef() 
   const connectionRef = useRef()
-  const [stream, setStream] = useState()
+ 
 
  
 
@@ -62,42 +67,52 @@ export default function Home() {
     
   },[])
 
-//   const answerCall = ()=> {
+  // useEffect(()=> {
+  //   if (window.innerWidth < 720) {
+  //     setExpanded(false)
+  //     setMobile(true)
+  //   } else {
+  //     setExpanded(true)
+  //     setMobile(false)
+  //   }
+  // },[])
 
-//     console.log("Call Accepted")
-//     console.log("This is the stream"+ stream)
-//     const peer = new Peer({
-//         initiator: false,
-//         trickle:false,
-//         stream: stream
-//     })
-  
-//     peer.on("signal", (data)=> {
+  useEffect(()=> {
+    socket.current?.on("callUser", (data)=> {
+      console.log("Incoming call")
+      navigator.mediaDevices.getUserMedia({video:true, audio: true}).then((stream)=>{
 
 
-//         socket.current?.emit("answerCall", {
-//             signal: data,
-//             to: caller,
+          dispatch(setStream(stream))
+           
+              myVideo.current.srcObject = stream
+              
+          })
+
           
-//         }) 
-//     })
-//     peer.on("stream", (stream)=> {
-       
-//         userVideo.current.srcObject = stream
-//     })
-//     peer.on("error", (err)=>
-//     {
-//         console.log(`There was an error: ${err}`)
-//     })
-  
-//     console.log(`Caller: ${caller} Caller Signal : ${callerSignal}`)
-//     peer.signal(callerSignal)
-   
-//     connectionRef.current=peer
-//     console.log("This is the peer"+ connectionRef.current)
-    
-//  }   
+      const payload = { caller: data.from,
+          name: data.name, callerPhoto: data.avatar,
+          callerSignal: data.signal }
+          
+          
+        dispatch(incomingCall (payload))
 
+        socket.current?.on("callAccepted", ()=> {
+              
+          dispatch(acceptCall())
+         
+      })
+
+      socket.current?.on("endCall", ()=> {
+         console.log("ending call")     
+          dispatch(endCall())
+         
+      })
+      
+      
+      
+      })
+  },[])
 
   
  //Get specific chat from chats by filtering the id of each chat group from users
@@ -107,15 +122,30 @@ const handleLogout = ()=>{
   navigate("/sign-in")
 }
 
+const leaveCall = ()=> {
+  console.log(connectionRef.current)
+
+  dispatch(endCall())
+
+  connectionRef.current.destroy()
+
+}
+
 const handleSearch =(e)=> {
   setSearchValue(e.target.value)
   
 }
   return (
     <>
-          {!selectedUser&& !showProfile?
+         
              <div className='text-gray-700 flex flex-col w-full h-full gap-1'>
-     
+              {callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
+
+              {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
+
+
+              {receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
+
              <section title='logo' className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1>
               <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> navigate("/my-profile", {state:{user}})}>
@@ -160,12 +190,21 @@ const handleSearch =(e)=> {
                     
                     chats.map((chat)=> {
                       
-                        return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center' key={chat._id}>
+                        return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
+                        <div className=''>
                         <div className='w-[3rem]'><img  className='max-w-[3rem]' src={`data: image/svg+xml;base64, ${chat.to._id=== user._id? chat.sender.avatarImage : chat.to.avatarImage}`} /></div> 
                         <div>
                          <div>{chat.to._id=== user._id? chat.sender.nickname : chat.to.nickname}</div>
                         <div className=''>{chat.message}</div>
  
+                        </div>
+                        
+                        </div>
+                        <div className=''>
+                        { selectedUser &&
+                       <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} />
+       
+                         }
                         </div>
                         
                         </div>
@@ -190,11 +229,9 @@ const handleSearch =(e)=> {
               
             
              </div>
-          :
+          
+       
         
-         <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} setStream={setStream}/>
-         
-        }
    
     </>
   

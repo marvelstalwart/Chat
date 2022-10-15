@@ -9,12 +9,15 @@ import { useDispatch } from 'react-redux'
 import { getChat } from '../../features/messages/messageSlice'
 import { Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import ReceivingCall from './videoCall/ReceivingCall'
 import { resetChat } from '../../features/users/usersSlice'
 import { reset, setId, addMessage } from '../../features/messages/messageSlice'
 import CallScreen from './videoCall/CallScreen'
 import {setCalling, endCall, incomingCall,  setStream, acceptCall} from '../../features/socket/socketSlice'
 import { callUser } from './videoCall/socket'
+import MyVideo1 from './videoCall/MyVideo1'
+import MyVideo2 from './videoCall/MyVideo2'
+import UserVideo from './videoCall/UserVideo'
+import CallNotification from './videoCall/CallNotification'
 export default function Chat({userVideo, connectionRef, selectedUser, socket, myVideo}) {
 
     let navigate = useNavigate()
@@ -45,11 +48,11 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
         //Emit the message received socket
         if (socket.current){
             socket.current?.on("msg-received", (message)=> {
-           console.log("new Message")
-                chat = [...chat]
-                chat.push({fromSelf:false, message})
-              
-                dispatch(addMessage(chat)) 
+           console.log(chat)
+           chat = [...chat];
+           chat.push({fromSelf:false, message: message})
+           console.log(chat)
+           dispatch(addMessage(chat)) 
                
             } )
             
@@ -166,7 +169,7 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
     
 
     const leaveCall = ()=> {
-        
+        console.log("ending call")
         socket.current.emit("end-call", {
             userToCall: selectedUser._id
         })
@@ -183,39 +186,14 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
 
   return (
     <div className=" h-screen w-full flex flex-col relative">
-            {       calling && <div className=' z-50 w-screen h-screen absolute ' > 
-                            <video className={`${callAccepted && !callEnded? 'absolute bottom-0 right-0  h-24 border-2 border-blue' : 'top-0 left-0 w-full h-full' }`} ref={myVideo} playsInline autoPlay/>
-                           
-                            <div className='absolute bottom-0 flex w-full justify-center  h-fit ' >
-                                 
-                                 <div onClick={leaveCall} className='z-50 bg-red-600 w-fit text-white p-2 rounded-md'>End call</div>
-                     
-                                </div>
-                               </div>
+                     {calling && <MyVideo1 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded} leaveCall={leaveCall} /> }
+                        
+                     {callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
 
-                     }
-                        
-                     {callAccepted && !callEnded ?  <div className=' z-40 w-screen h-screen  absolute'>
-                     
-                        <video className='h-full w-full' playsInline autoPlay ref={userVideo}/> 
-                        
-                      </div>
-                      :null
-                        
-                    }
-
-                        { callVideo && <div className=' z-50  absolute w-screen h-screen'>
-                            <video className={`${callAccepted && !callEnded? 'absolute bottom-0 right-0  h-24 border-2 border-blue' : 'top-0 left-0 w-full h-full' }`} playsInline autoPlay ref={myVideo}/>   
-                               </div>  }
+                        {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
 
                
-                 {  
-                  receivingCall && !callAccepted && <div className=' z-50  absolute w-screen h-screen'>
-                 
-                  <ReceivingCall socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/>
-                
-                </div>
-            }
+                     {receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
         
         <div className='header z-10 flex w-full items-center justify-between p-4  h-38 bg-white'>
             <div className='flex items-center gap-2'>
@@ -232,9 +210,7 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
             <FontAwesomeIcon onClick={ ()=> makeCall(user, selectedUser, socket, connectionRef, userVideo, myVideo, stream, dispatch) } icon={faPhone}/>
                 
                 <FontAwesomeIcon icon={faVideo}/>
-               {/* {callScreen && <CallScreen socket={socket}  selectedUser={selectedUser} user={user} dispatch={dispatch}
-                connectionRef={connectionRef} userVideo={userVideo} myVideo={myVideo}
-               />} */}
+              
             </div>
 
          </div>

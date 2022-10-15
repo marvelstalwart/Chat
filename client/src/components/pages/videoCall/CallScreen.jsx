@@ -7,7 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { endCall, setStream } from '../../../features/socket/socketSlice'
 import { incomingCall, acceptCall } from '../../../features/socket/socketSlice'
 import { useSelector } from 'react-redux'
-import ReceivingCall from './ReceivingCall'
+import CallNotification from './CallNotification'
+
 
 export default function CallScreen({socket, selectedUser, user, dispatch, myVideo}) {
 
@@ -168,11 +169,11 @@ export default function CallScreen({socket, selectedUser, user, dispatch, myVide
 
     const leaveCall = ()=> {
         
-        dispatch(endCall())
-        // socket.current.emit("end-call", {
-        //     userToCall: selectedUser._id
-        // })
-
+     
+        socket.current.emit("end-call", {
+            userToCall: selectedUser._id
+        })
+                connectionRef.current.destroy()
         console.log("Ending"+connectionRef.current)
     
     }
