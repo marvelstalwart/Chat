@@ -184,27 +184,17 @@ const handleSearch =(e)=> {
              <hr ></hr>
              <section title='chats' >
              
-                  
                   {
                     chats && chats.length> 0? 
                     
                     chats.map((chat)=> {
                       
                         return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
-                        <div className=''>
                         <div className='w-[3rem]'><img  className='max-w-[3rem]' src={`data: image/svg+xml;base64, ${chat.to._id=== user._id? chat.sender.avatarImage : chat.to.avatarImage}`} /></div> 
                         <div>
                          <div>{chat.to._id=== user._id? chat.sender.nickname : chat.to.nickname}</div>
                         <div className=''>{chat.message}</div>
  
-                        </div>
-                        
-                        </div>
-                        <div className=''>
-                        { selectedUser &&
-                       <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} />
-       
-                         }
                         </div>
                         
                         </div>
@@ -230,7 +220,10 @@ const handleSearch =(e)=> {
             
              </div>
           
+        { selectedUser &&
+           <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} />
        
+        }
         
    
     </>
