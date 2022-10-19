@@ -4,18 +4,19 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faCheck, faPen, faImage } from '@fortawesome/free-solid-svg-icons'
 import { updateUser, logout } from '../../../features/auth/authSlice'
+import { BigHead } from '@bigheads/core'
 
 import { useDispatch, useSelector } from 'react-redux'
-
-export default function MyProfile() {
+     
+export default function MyProfile({setShowProfile}) {
   const {user, isLoading, isSuccess} = useSelector((state)=> state.auth)
   let navigate = useNavigate()
   const dispatch = useDispatch()
   let location = useLocation()
 const [userDetails, setUserDetails] = useState({
-  username: location.state && location.state.user && location.state.user.name,
-  email: location.state && location.state.user && location.state.user.email,
-  about: location.state && location.state.user && location.state.user.about
+  username:user.name,
+  email:user.email,
+  about:user.about
 
 })
 
@@ -53,21 +54,23 @@ const [userDetails, setUserDetails] = useState({
 
   console.log(location.state)
   return (
-    <div>
-      <div className='absolute flex items-center w-full h-20 top-0 bg-gray-100'>
+    <div className='absolute z-40 bg-white top-0 left-0  w-full lg:w-80'>
+      <div className='absolute flex items-center w-full h-20 top-0  left-0 bg-white'>
       <div className='flex items-center gap-2 px-2'>
-       <FontAwesomeIcon onClick={()=> navigate(-1)} icon={faArrowLeft}/>
+       <FontAwesomeIcon onClick={()=> setShowProfile(false)} icon={faArrowLeft}/>
         Profile</div>
       </div>
         <div className='h-screen'>
           <div className=' h-full pt-28'>
             <div className='flex flex-col items-center'>
-            <img className='w-48' src={`data: image/svg+xml;base64, ${location.state.user.avatarImage}`}/>
-            <div onClick={()=>navigate("/setAvatar")} className=' cursor-pointer flex items-center gap-1'>Change Avatar<FontAwesomeIcon icon={faImage}/></div>
+            <div className=' w-48'><BigHead {...user.avatarImage}/>
+              </div>
+            {/* <img className='w-48' src={`data: image/svg+xml;base64, ${user.avatarImage}`}/> */}
+            <div onClick={()=>navigate("/setAvatar", {state:{avatarProps:user.avatarImage}})} className=' cursor-pointer flex items-center gap-1'>Customize Avatar<FontAwesomeIcon icon={faImage}/></div>
             </div>
             
             <div className=' flex flex-col gap-4  w-full md:items-center  pt-10 px-8'>
-            <div  className='md:w-96 l:w-96 flex flex-col gap-3'>
+            <div  className=' flex flex-col gap-3'>
 
            
             <div className=' flex flex-col gap-3'> 

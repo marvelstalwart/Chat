@@ -1,8 +1,9 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Picker from "emoji-picker-react"
-import { faArrowLeft, faPaperPlane, faFaceSmile, faPhone, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faPaperPlane, faFaceSmile, faPhone, faVideo} from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'react-redux'
+import { BigHead } from '@bigheads/core'
 import Peer from 'simple-peer'
 import { newMessage } from '../../features/messages/messageSlice'
 import { useDispatch } from 'react-redux'
@@ -18,7 +19,7 @@ import MyVideo1 from './videoCall/MyVideo1'
 import MyVideo2 from './videoCall/MyVideo2'
 import UserVideo from './videoCall/UserVideo'
 import CallNotification from './videoCall/CallNotification'
-export default function Chat({userVideo, connectionRef, selectedUser, socket, myVideo}) {
+export default function Chat({ userVideo, connectionRef, selectedUser, socket, myVideo}) {
 
     let navigate = useNavigate()
     let dispatch = useDispatch();
@@ -104,11 +105,13 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
     
 
     useEffect(()=> {
-       
+       if (selectedUser) {
+           
            
             dispatch(getChat({from:user._id, to: selectedUser._id}))
     
-        },[messages])
+       }
+        },[messages, selectedUser])
 
 
     const addEmoji = ( emoji)=> {
@@ -185,78 +188,90 @@ export default function Chat({userVideo, connectionRef, selectedUser, socket, my
     }
 
   return (
-    <div className=" h-screen w-full flex flex-col relative">
-                     {calling && <MyVideo1 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded} leaveCall={leaveCall} /> }
-                        
-                     {callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
-
-                        {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
-
-               
-                     {receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
-        
-        <div className='header z-10 flex w-full items-center justify-between p-4  h-38 bg-white'>
-            <div className='flex items-center gap-2'>
-            <div onClick={()=> dispatch(resetChat())}><FontAwesomeIcon icon={faArrowLeft}/></div>
-           <div onClick={()=> navigate(`user/${selectedUser.nickname.toLowerCase()}`,{state:{selectedUser}})} className='flex items-center gap-2  w-full cursor-pointer'>
-           <img  className='max-w-[3rem]' src={`data: image/svg+xml;base64,${ selectedUser && selectedUser.avatarImage}`}/>
-            <div className=''>{selectedUser && selectedUser.nickname}</div>
-           
-           </div>
-            </div>
-           
-
-            <div className='flex gap-4 text-gray-700 cursor-pointer'>
-            <FontAwesomeIcon onClick={ ()=> makeCall(user, selectedUser, socket, connectionRef, userVideo, myVideo, stream, dispatch) } icon={faPhone}/>
-                
-                <FontAwesomeIcon icon={faVideo}/>
-              
-            </div>
-
-         </div>
-             <div className='bg-gray-100 flex-1 relative w-full overflow-y-scroll'>
-                    {chat && chat.map((chat, index)=> {
-                      
-                      
-                        return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} w-full`}>
-                        <div className=' w-fit h-fit bg-white p-3 rounded-lg'>
-                            {chat.message}
-                        </div>
-                        <div ref={lastMessageRef}/>
-                   </div> })}
+                    <div className=" h-screen w-full lg:p-4">
+                            <div className='h-full w-full flex flex-col lg:rounded-xl  relative'>
+                        {selectedUser&& <>
+                            {calling && <MyVideo1 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded} leaveCall={leaveCall} /> }
                     
+                    {callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
+
+                    {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
+
+
+                    {receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
+
+                <div className='header z-10 flex w-full items-center justify-between p-4  h-24 bg-white rounded-xl'>
+                <div className='flex items-center gap-2'>
+                <div className='lg:hidden' onClick={()=> dispatch(resetChat())}><FontAwesomeIcon icon={faArrowLeft}/></div>
+                <div onClick={()=> navigate(`user/${selectedUser.nickname.toLowerCase()}`,{state:{selectedUser}})} className='flex items-center gap-2 font-medium w-full cursor-pointer'>
+               
+                <BigHead className='w-[2rem]' {...selectedUser.avatarImage}/>
+                <div className=''>{selectedUser && selectedUser.nickname}</div>
+
+                </div>
+                </div>
+
+
+                <div className='flex gap-4 text-gray-500 cursor-pointer'>
+                <FontAwesomeIcon onClick={ ()=> makeCall(user, selectedUser, socket, connectionRef, userVideo, myVideo, stream, dispatch) } icon={faPhone}/>
+
+                <FontAwesomeIcon icon={faVideo}/>
+
+                </div>
+
+                </div>
+                <div className='bg-white flex-1 relative w-full overflow-y-scroll'>
+                {chat && chat.map((chat, index)=> {
+                    
+                    
+                    return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} font-light`}>
+                    <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl' : 'bg-gray-100 rounded-tr-xl'} w-fit h-fit bg-white p-3 rounded-b-xl md:p-6`}>
+                        {chat.message}
+                    </div>
+                    <div ref={lastMessageRef}/>
+                </div> })}
                 
 
-    
-    </div>
-    <div className='bg-gray-100 w-full  px-5 pb-2'>
-    <div className=' flex  items-center gap-2'>
-            <FontAwesomeIcon onClick={handleEmoji} icon={faFaceSmile} size="2xl" className="text-gray-700  "/>
-            <form className='relative flex justify-end items-center flex-1' onSubmit={sendChat}>
-        
 
+
+                </div>
+                <div className='bg-white w-full  px-5 pb-2 rounded-xl py-4'>
+                <div className=' flex  items-center gap-2 p-2 rounded-full bg-gray-100'>
+                <FontAwesomeIcon onClick={handleEmoji} icon={faFaceSmile} size="lg" className="text-gray-500  "/>
+                <form className='relative flex justify-end items-center flex-1' onSubmit={sendChat}>
+
+
+
+                <input onKeyDown={handleTyping} value={message} onChange={(e)=> setMessage(e.target.value)} className=' p-4 bg-gray-100  w-full overflow-y-visible outline-none' type="text" placeholder='Type here...'/>
+                <FontAwesomeIcon icon={faPaperPlane} size="lg" className="absolute pr-4 text-gray-500"/>
+
+
+
+
+                </form> 
+                </div>
+                <div>
+                {
+                emojiPicker && 
+                <div><Picker  onEmojiClick={addEmoji}/></div>
+                }
+
+
+                </div>
+
+                </div>
+
+
+                        </>
+                        
+                       
+                       
+                        }
+                   </div>
+                </div>
     
-     <input onKeyDown={handleTyping} value={message} onChange={(e)=> setMessage(e.target.value)} className='rounded-xl p-5  w-full overflow-y-visible' type="text" placeholder='Type your message..'/>
-            <FontAwesomeIcon icon={faPaperPlane} size="2xl" className="absolute pr-4 text-gray-700"/>
-          
-           
-         
-  
-    </form> 
-    </div>
-    <div>
-        {
-            emojiPicker && 
-            <div className=' '><Picker  onEmojiClick={addEmoji}/></div>
-        }
+     
    
-       
-    </div>
-       
-        </div>
-
-
-    </div>
    
   )
 }

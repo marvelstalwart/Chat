@@ -67,7 +67,7 @@ let schema = yup.object().shape({
            <div className=' absolute blur-3xl w-full  justify-center -z-10 flex gap-2'>
             <div className='h-20 bg-blue duration-75 w-48 animate-bounce'></div>
             <div className='h-20 bg-[#FAFA33] w-48 rounded-full '></div>
-                        <div class="w-0 h-0  animate-bounce
+                        <div className="w-0 h-0  animate-bounce
                     border-t-[100px] border-t-transparent
                     border-r-[150px] border-r-blue
                     border-b-[100px] border-b-transparent

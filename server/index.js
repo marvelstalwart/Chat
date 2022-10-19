@@ -80,7 +80,7 @@ global.onlineUsers = new Map()
     
                 })
             }
-           
+            
         })
         socket.on("end-call", (data)=> {
             const sendUserSocket = onlineUsers.get(data.userToCall) 
@@ -90,9 +90,9 @@ global.onlineUsers = new Map()
         socket.on("answerCall", (data)=> {
             console.log(data.signal)
             const sendUserSocket = onlineUsers.get(data.to)
-
+ 
             socket.to(sendUserSocket).emit("callAccepted", data.signal)
-        })
+        }) 
 
     socket.on("typing", (data)=> {
     

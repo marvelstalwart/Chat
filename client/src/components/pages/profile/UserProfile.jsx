@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft,faEnvelope} from '@fortawesome/free-solid-svg-icons'
 import { useEffect } from 'react'
+import { BigHead } from '@bigheads/core'
 import { useDispatch, useSelector } from 'react-redux'
 
 
@@ -28,7 +29,8 @@ export default function UserProfile() {
     </div>
     <div>
     <div className=' pt-20 flex flex-col items-center gap-2'>
-            <img className='w-48' src={`data: image/svg+xml;base64, ${selectedUser.avatarImage}`}/>
+       <BigHead  {...selectedUser.avatarImage}/>
+           
         <div className='font-medium text-4xl'>{selectedUser.nickname}</div>  
         <div className='text-xs p-2 flex items-center gap-1'><FontAwesomeIcon icon={faEnvelope}/>{user && user[0].email}</div>
         <div>

@@ -76,6 +76,10 @@ reducers: {
         },
         addMessage: (state, action)=> {
             state.chat = action.payload
+        },
+        searchMessage: (state, action)=> {
+            
+        //      state.chats = state.chats.map((chat)=> chat.message)
         }
 
 
@@ -120,6 +124,7 @@ extraReducers: (builder)=> {
         state.isSuccess = true
         state.chats= action.payload
        
+       
     })
     .addCase(getChats.rejected, (state, action)=> {
         state.isLoading = false
@@ -133,5 +138,5 @@ extraReducers: (builder)=> {
 
     
 })
-export const {reset, setId, addMessage} = messageSlice.actions;
+export const {reset, setId, addMessage, searchMessage} = messageSlice.actions;
 export default messageSlice.reducer;

@@ -5,48 +5,60 @@ import { getUsers } from '../../features/users/usersSlice';
 import swal from 'sweetalert2';
 import MyProfile from './profile/MyProfile';
 import Peer from "simple-peer"
+
 import { io } from 'socket.io-client';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faComments} from '@fortawesome/free-solid-svg-icons';
 import defaultImg from "../../assets/img/default.png"
 import { resetChat, changeChat } from '../../features/users/usersSlice';
 import Chat from './Chat';
+import Users from './users/Users';
+import Groups from './groups/Groups';
+import Chats from "./chats/Chats"
+import {BigHead} from "@bigheads/core"
+import { setAvatarProps } from '../../features/avatar/avatarSlice';
+import { getRandomOptions } from '../../utils/bighead';
 import { acceptCall,endCall, setStream, callAccepted, callEnded } from '../../features/socket/socketSlice';
 import { logout, reset } from '../../features/auth/authSlice';
-import { getChats } from '../../features/messages/messageSlice';
+import { getChats, searchMessage } from '../../features/messages/messageSlice';
 import { incomingCall } from '../../features/socket/socketSlice';
 import CallNotification from './videoCall/CallNotification';
 import UserVideo from './videoCall/UserVideo';
 import MyVideo2 from './videoCall/MyVideo2';
+
 export default function Home() {
 
   const socket = useRef()
   const dispatch = useDispatch();
   const navigate = useNavigate()
- 
+  const {faceMask, lipColor} = useSelector(state=> state.avatar)
   const {user} = useSelector(state=> state.auth)
   const { users, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
   const [showProfile, setShowProfile] = useState(false)
   const {messages, chats} = useSelector((state)=> state.messages)
   const [searchValue, setSearchValue] = useState()
+  //Users, Groups, and Messages Interface conditional rendering
+ const [showUsers, setShowUsers] = useState(false)
+ const [showGroups, setShowGroups] = useState(false)
+ const [showMessages, setShowMessages] = useState(true)
+
   //Voice Call States
   const {calling, callAccepted, receivingCall, callVideo, callScreen, callEnded, caller, callerSignal, stream} = useSelector((state)=> state.socket)
    
   const myVideo = useRef()
   const userVideo = useRef() 
   const connectionRef = useRef()
+  //Mobile View State
+  const [mobile, setMobile] = useState(false)
  
-
- 
-
   useEffect(()=> {
-
+    
       if (user) {
         socket.current = io("http://localhost:5000")
           socket.current.emit("newUser", user._id)
-             
-        dispatch(getUsers(user))
+         
+       
        
       }
    
@@ -61,57 +73,71 @@ export default function Home() {
  
   },[isError, dispatch, user])
   
-  useEffect(()=> {
-
-    dispatch(getChats())
+  console.log(lipColor)
+  const handleResize =()=> {
+    if (window.innerWidth < 720 ) {
+        
+      setMobile(true)
+    } else {
+   
+      setMobile(false)
+    }
+  }
     
-  },[])
+  useEffect(()=> {
 
-  // useEffect(()=> {
-  //   if (window.innerWidth < 720) {
-  //     setExpanded(false)
-  //     setMobile(true)
-  //   } else {
-  //     setExpanded(true)
-  //     setMobile(false)
-  //   }
-  // },[])
+    if (window.innerWidth < 720 ) {
+      
+      setMobile(true)
+    } else {
+   
+      setMobile(false)
+    }
+    window.addEventListener("resize", handleResize)
+  },[mobile])
+
+
 
   useEffect(()=> {
-    socket.current?.on("callUser", (data)=> {
-      console.log("Incoming call")
-      navigator.mediaDevices.getUserMedia({video:true, audio: true}).then((stream)=>{
 
-
-          dispatch(setStream(stream))
+    if (mobile) {
+      console.log(mobile)
+      socket.current?.on("callUser", (data)=> {
+        console.log("Incoming call")
+        navigator.mediaDevices.getUserMedia({video:true, audio: true}).then((stream)=>{
+  
+  
+            dispatch(setStream(stream))
+             
+                myVideo.current.srcObject = stream
+                
+            })
+  
+            
+        const payload = { caller: data.from,
+            name: data.name, callerPhoto: data.avatar,
+            callerSignal: data.signal }
+            
+            
+          dispatch(incomingCall (payload))
+  
+          socket.current?.on("callAccepted", ()=> {
+                
+            dispatch(acceptCall())
            
-              myVideo.current.srcObject = stream
-              
-          })
-
-          
-      const payload = { caller: data.from,
-          name: data.name, callerPhoto: data.avatar,
-          callerSignal: data.signal }
-          
-          
-        dispatch(incomingCall (payload))
-
-        socket.current?.on("callAccepted", ()=> {
-              
-          dispatch(acceptCall())
-         
-      })
-
-      socket.current?.on("endCall", ()=> {
-         console.log("ending call")     
-          dispatch(endCall())
-         
-      })
-      
-      
-      
-      })
+        })
+  
+        socket.current?.on("endCall", ()=> {
+           console.log("ending call")     
+            dispatch(endCall())
+           
+        })
+        
+        
+        
+        })
+    }
+    
   },[])
 
   
@@ -120,6 +146,23 @@ export default function Home() {
 const handleLogout = ()=>{
   dispatch(logout())
   navigate("/sign-in")
+}
+
+const displayChats = ()=> {
+  setShowMessages(true)
+  setShowUsers(false)
+  setShowGroups(false)
+}
+
+const displayUsers = ()=> {
+  setShowUsers(true)
+  setShowGroups(false)
+  setShowMessages(false)
+}
+const displayGroups = ()=> {
+  setShowGroups(true)
+  setShowUsers(false)
+  setShowMessages(false)
 }
 
 const leaveCall = ()=> {
@@ -131,99 +174,81 @@ const leaveCall = ()=> {
 
 }
 
-const handleSearch =(e)=> {
-  setSearchValue(e.target.value)
-  
-}
+
   return (
+
     <>
          
-             <div className='text-gray-700 flex flex-col w-full h-full gap-1'>
-              {callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
+             <div className='bg-gray-100 text-gray-800 flex w-full h-full gap-1'>
+              {mobile && callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
 
               {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
 
 
-              {receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
+              {mobile && receivingCall && !callAccepted &&  <CallNotification socket={socket} userVideo={userVideo} connectionRef={connectionRef} stream={stream}/> }
+              
+              
 
-             <section title='logo' className='flex  justify-between items-center'>
-              <h1 className='font-lily font-bold text-3xl p-2'>Yarn</h1>
-              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> navigate("/my-profile", {state:{user}})}>
-              <img className='w-[2rem] ' src={`data: image/svg+xml;base64,${user.avatarImage}`} />
+              <div className={`${mobile && selectedUser ? 'hidden' : mobile ? 'w-full': 'flex flex-col w-80 gap-1' }   `}>
+              <section title='logo' className='flex  justify-between items-center'>
+              <h1 className='font-lily font-bold text-xl p-2'>Yarn</h1>
+              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> setShowProfile(true)}>
+              
+              <BigHead className='w-[2rem]' {...user.avatarImage}/>
+              </div>
+              {showProfile && <MyProfile user={user} setShowProfile={setShowProfile}/>}
+              
+             </section>
+             <section title='search-bar' className='px-2 relative flex items-center'>
+             < FontAwesomeIcon onClick={()=>handleLogout()} icon={faMagnifyingGlass} className="absolute px-2 pl-3 pointer-events-none" color="GRAY" />
+               <input onChange={(e)=>setSearchValue(e.target.value)} className='bg-white w-full p-3 px-8 rounded-3xl outline-0' type="text" placeholder='SEARCH'/>
+        
+             </section>
+             <div className='p-2 font-bold flex justify-around'>
+              <div onClick={displayChats} className='cursor-pointer'>Messages</div> 
+             <div onClick = {displayGroups} className='cursor-pointer'>Groups</div> 
+             <div  onClick={displayUsers} className='cursor-pointer'>Users</div>
+              </div>
+             
+             
+             
+           
+        
+             <hr ></hr>
+             <section title='chats'  className='p-2 h-full overflow-y-auto'>
+              <div className='bg-white rounded-lg h-full'>
+
+              {showMessages && <Chats changeChat={changeChat} searchValue={searchValue}/>}
+              {showUsers && <Users setShowUsers={setShowUsers} searchValue={searchValue}/>}
+              {showGroups && <Groups searchValue={searchValue}/>}      
                
               </div>
-              
-                           </section>
-             <section title='search-bar' className='px-2 relative flex items-center'>
-             < FontAwesomeIcon onClick={()=>handleLogout()} icon={faMagnifyingGlass} className="absolute px-2 pl-3 pointer-events-none" color="gray" />
-               <input onChange={handleSearch} className='bg-gray-200 w-full p-3 px-8 rounded-3xl outline-0' type="text" placeholder='Search'/>
-        
-             </section>
-             <div className='p-2 font-bold'>Users</div>
-             <hr ></hr>
-             
-             
-           <section title='users' className='flex h-15 w-full overflow-x-hidden '>
-        
-          
-             {users && users.map ((user, index)=> (
-               <div  className="flex flex-col p-3 items-center " key={index} onClick={()=>dispatch(changeChat(user))}>
-                 
-                 
-                 <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="Avatar"/>
-                 <h1 className='font-lgtext-xs'>{user.nickname}</h1>
-                 
-                 </div>
-        
-             )
-        
-        
-             )}
-             </section>
-        
-             <hr ></hr>
-             <section title='chats' >
-             
-                  {
-                    chats && chats.length> 0? 
-                    
-                    chats.map((chat)=> {
-                      
-                        return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
-                        <div className='w-[3rem]'><img  className='max-w-[3rem]' src={`data: image/svg+xml;base64, ${chat.to._id=== user._id? chat.sender.avatarImage : chat.to.avatarImage}`} /></div> 
-                        <div>
-                         <div>{chat.to._id=== user._id? chat.sender.nickname : chat.to.nickname}</div>
-                        <div className=''>{chat.message}</div>
- 
-                        </div>
-                        
-                        </div>
-                      
-                      
-                       
-                     
-                  })
-                        
-                      
-                    :
-                    <div className='p-2 font-bold  h-full flex items-center justify-center'>
-                    <div className=''>You do not have any Chats yet!
-                    </div>
-                    </div>
-                  }
-                      
-               
              
              </section>
             
               
+              </div>
+              
+             <div className={`${!mobile && selectedUser ? 'flex-1' : mobile && selectedUser? 'block w-full' : 'hidden' } `}>
+                   
+                        <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} />
+       
+                  
+                    </div>
+
+                    <div className={`${!mobile && !selectedUser ? 'flex-1': 'hidden'}`}>
+                    <div className='text-2xl z-50 w-full h-full flex items-center justify-center gap-2'>
+                      <div><FontAwesomeIcon icon={faComments}/></div>
+                   
+                      <div>Start chatting</div>
+                      </div>
+                        
+                    </div>
+            
             
              </div>
           
-        { selectedUser &&
-           <Chat selectedUser={selectedUser} socket={socket}  myVideo={myVideo} userVideo={userVideo} connectionRef={connectionRef} stream={stream} />
        
-        }
         
    
     </>

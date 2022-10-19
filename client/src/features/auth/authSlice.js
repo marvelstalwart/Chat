@@ -52,7 +52,7 @@ export const setAvatar = createAsyncThunk("auth/setAvatar", async(payload, thunk
 
             const data = {
                 id : thunkAPI.getState().auth.user._id,
-                avatar: avatar[payload]
+                avatar: payload
             }
 
             const token = thunkAPI.getState().auth.user.token
