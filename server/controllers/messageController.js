@@ -2,7 +2,7 @@ const messageModel = require("../models/messageModel")
 const userModel = require("../models/userModel")
 module.exports.addMessage = async (req, res)=> {
 
-    const {from, to, message, userPic, nickname} = req.body
+    const {from, to, message,} = req.body
     if (from && to && message) {
         let newMessage = new messageModel ({
             users: [from, to],
@@ -22,7 +22,7 @@ module.exports.addMessage = async (req, res)=> {
 
     }
     else {
-        res.status.json({message: `One of the fields are empty`})
+        res.status(400).json({message: `One of the fields are empty`})
     }
 
 

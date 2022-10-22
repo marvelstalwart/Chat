@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
+const app = express(); 
 const cors = require("cors")
+const groupsRoute = require("./routes/groupsRoute")
 const messageRoute = require("./routes/messagesRoute")
 const userRoute = require("./routes/userRoute")
 const socket = require("socket.io")
@@ -19,6 +20,7 @@ const CONN = process.env.CONN
 
 app.use("/api/users", userRoute)
 app.use("/api/messages", messageRoute)
+app.use("/api/groups", groupsRoute)
   
 
     mongoose.connect(CONN, {useNewUrlParser:true, useUnifiedTopology: true} )

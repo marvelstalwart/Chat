@@ -1,6 +1,7 @@
 import { BigHead } from '@bigheads/core'
 import React from 'react'
 import { useEffect, useState } from 'react'
+import {motion} from "framer-motion"
 import { useSelector, useDispatch } from 'react-redux'
 import { getChats } from '../../../features/messages/messageSlice'
 export default function Chats({ changeChat, searchValue}) {
@@ -38,7 +39,7 @@ export default function Chats({ changeChat, searchValue}) {
      
     {
       chats && chats.length> 0? 
-      <div className='flex w-full '>
+      <motion.div initial={{x: -200}} animate={{x: 0}} className='flex w-full '>
         <div className='w-80'>
 
       
@@ -104,7 +105,7 @@ export default function Chats({ changeChat, searchValue}) {
     }
       </div>
       
-    </div>  
+    </motion.div>  
         
       :
       

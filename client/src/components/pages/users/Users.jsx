@@ -4,7 +4,7 @@ import { changeChat } from '../../../features/users/usersSlice'
 import { BigHead } from '@bigheads/core'
 import { getUsers } from '../../../features/users/usersSlice'
 import { useSelector, useDispatch } from 'react-redux'
-
+import {motion} from "framer-motion"
 export default function Users({setShowUsers, searchValue}) {
     const { user} = useSelector((state)=> state.auth)
     const {users} = useSelector ((state)=> state.users)
@@ -32,7 +32,7 @@ export default function Users({setShowUsers, searchValue}) {
     
 
      return (  
-            <div>
+            <motion.div initial={{x:-200}} animate={{x:0}}>
                     <section title='users' className=' h-15 w-full overflow-x-hidden '>
       {searchValue? filteredUsers && filteredUsers.length> 0 ?  filteredUsers.map((user, index)=> (
 
@@ -84,7 +84,7 @@ export default function Users({setShowUsers, searchValue}) {
           
 
 </section>
-  </div>
+  </motion.div>
     
   )
 }

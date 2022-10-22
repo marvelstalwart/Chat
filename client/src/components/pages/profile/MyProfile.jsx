@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faCheck, faPen, faImage } from '@fortawesome/free-solid-svg-icons'
 import { updateUser, logout } from '../../../features/auth/authSlice'
 import { BigHead } from '@bigheads/core'
-
+import {motion} from "framer-motion"
 import { useDispatch, useSelector } from 'react-redux'
      
 export default function MyProfile({setShowProfile}) {
@@ -54,11 +54,11 @@ const [userDetails, setUserDetails] = useState({
 
   console.log(location.state)
   return (
-    <div className='absolute z-40 bg-white top-0 left-0  w-full lg:w-80'>
+    <motion.div initial={{x:-200}} animate={{x:0}} className='absolute z-40 bg-white top-0 left-0  w-full lg:w-80'>
       <div className='absolute flex items-center w-full h-20 top-0  left-0 bg-white'>
-      <div className='flex items-center gap-2 px-2'>
+      <div className='flex items-center gap-2 px-2 font-bold'>
        <FontAwesomeIcon onClick={()=> setShowProfile(false)} icon={faArrowLeft}/>
-        Profile</div>
+        PROFILE</div>
       </div>
         <div className='h-screen'>
           <div className=' h-full pt-28'>
@@ -122,6 +122,6 @@ const [userDetails, setUserDetails] = useState({
 
         </div>
 
-    </div>
+    </motion.div>
   )
 }

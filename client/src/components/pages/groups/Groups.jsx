@@ -1,7 +1,7 @@
 import React from 'react'
-
-export default function Groups() {
+import {motion} from "framer-motion"
+export default function Groups({searchValue}) {
   return (
-    <div>Groups</div>
+    <motion.div initial={{x:-200}} animate={{x:0}}>Groups</motion.div>
   )
 }
