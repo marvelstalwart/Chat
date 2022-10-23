@@ -5,15 +5,15 @@ const ObjectId = mongoose.Types.ObjectId;
 
 
 module.exports.createGroup = async(req, res)=> {
-    let {name, creator, members, admins} = req.body
-    
+    let {name, creator, members} = req.body
+    members.push(creator)
     if (name && creator && members) {
         
         let newGroup = new groupModel({
             name,
             creator,
             members:members,
-            admins
+            admins: creator
             
             
             
@@ -31,7 +31,7 @@ module.exports.createGroup = async(req, res)=> {
     
 }
 
-//Add new Group Message with Member Rights
+//Send new Group Message with Member Rights
 module.exports.addGroupMessage = async (req, res)=> {
     const {groupId, from, message, userId} = req.body
     if (groupId && from && message && userId) { 
@@ -83,7 +83,7 @@ module.exports.messages = async (req,res)=> {
                     groupId: groupId
                 })
                 
-                messages = await messageModel.populate(messages, {path: "sender", select: "nickname, avatarImage"})
+                messages = await messageModel.populate(messages, {path: "sender", select: "nickname avatarImage"})
                 messages = messages.map((msg)=> {
                     return {
                         fromSelf: msg.sender._id.toString() === userId,
@@ -115,10 +115,12 @@ module.exports.getGroups = async (req,res)=> {
             members: userId
         }) 
         if (groups && groups.length){
-        groups.map( async (group)=>  {
            
+            
+        const projectedGroupMsgs = await Promise.all(groups.map( async (group)=>  {
+            
         
-            let messages = await messageModel.aggregate([
+             messages = await messageModel.aggregate([
                 {$match: {groupId: ObjectId(group._id)}},
                 {$sort: {
                     "timeStamp": -1
@@ -139,15 +141,16 @@ module.exports.getGroups = async (req,res)=> {
                     }
                 }
             ])
-            messages =await  messageModel.populate(messages,{path: "groupId", select:"name" })
-            res.status(200).json(messages)
-           
+            
+           return await  messageModel.populate(messages,{path: "groupId", select:"name" })
+            
+       
                 
             
 
-        })
+        }))
     
-        
+        return res.status(200).json(projectedGroupMsgs)
        
     }
     else {
