@@ -4,7 +4,7 @@ import usersSlice  from '../features/users/usersSlice';
 import messageSlice from '../features/messages/messageSlice';
 import  socketSlice  from '../features/socket/socketSlice';
 import avatarSlice from '../features/avatar/avatarSlice';
-
+import groupSlice from '../features/groups/groupSlice';
 export const store = configureStore({
   middleware: (getDefaultMiddleware)=>
   getDefaultMiddleware({
@@ -15,6 +15,9 @@ export const store = configureStore({
     users: usersSlice,
     messages: messageSlice,
     socket: socketSlice,
-    avatar: avatarSlice
+    avatar: avatarSlice,
+    groups: groupSlice
+
+
   },
 });

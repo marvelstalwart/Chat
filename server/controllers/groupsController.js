@@ -119,31 +119,52 @@ module.exports.getGroups = async (req,res)=> {
             
         const projectedGroupMsgs = await Promise.all(groups.map( async (group)=>  {
             
-        
-             messages = await messageModel.aggregate([
-                {$match: {groupId: ObjectId(group._id)}},
-                {$sort: {
-                    "timeStamp": -1
-                }},
-                {
-                    $group: {
-                        _id: "$groupId",
-                
-                        "lastMessage": {
-                            "$last":"$message"
-                        },
-                        "messages": {
-                            "$push" : "$message"
-                        },
-                        "groupId": {
-                            "$first": "$groupId"
-                        }
-                    }
+            let messages= await messageModel.find({
+                groupId: group._id
+            })
+                if (messages && messages.length) {
+
+                    return await messageModel.aggregate([
+                       {$match: {groupId: ObjectId(group._id)}},
+                       {$sort: {
+                           "timeStamp": -1
+                       }},
+                       {
+                           $group: {
+                               _id: "$groupId",
+       
+                               "name": {
+                                  "$first": `${group.name}`
+                               },
+                               "lastMessage": {
+                                   "$last": "$message"
+                               },
+                               "messages": {
+                                   "$push" : "$message"
+                               },
+                               "groupId": {
+                                   "$first": "$groupId"
+                               }
+                           }
+                       }
+                   ])
                 }
-            ])
+                else {
+                    return await groupModel.aggregate([
+                        {$match: {_id: ObjectId(group._id)}},
+                        {
+                            "$project": {
+                                _id: 1,
+                                name: 1,
+                                
+                             
+        
+                            }
+                        },
+                    ])
+                }
             
-           return await  messageModel.populate(messages,{path: "groupId", select:"name" })
-            
+           
        
                 
             
