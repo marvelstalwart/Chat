@@ -98,7 +98,7 @@ export default function Home() {
     window.addEventListener("resize", handleResize)
   },[mobile])
 
-
+console.log(user)
 
   useEffect(()=> {
 
@@ -191,7 +191,7 @@ const leaveCall = ()=> {
               
               
 
-              <div className={`${mobile && selectedUser ? 'hidden' : mobile ? 'w-full flex flex-col': 'flex flex-col w-80 gap-1' }   `}>
+              <div className={`${mobile && selectedUser || mobile && selectedGroup ? 'hidden' : mobile ? 'w-full flex flex-col': 'flex flex-col w-80 gap-1' }   `}>
               <section title='logo' className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-xl p-2'>Yarn</h1>
               <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> setShowProfile(true)}>
@@ -217,7 +217,7 @@ const leaveCall = ()=> {
            
         
              <hr ></hr>
-             <section title='chats'  className='p-2 flex-1  overflow-y-auto'>
+             <section   className='p-2 flex-1  overflow-y-auto'>
               <div className='bg-white h-full rounded-lg '>
 
               {showMessages && <Chats changeChat={changeChat} searchValue={searchValue}/>}
@@ -243,9 +243,9 @@ const leaveCall = ()=> {
 
                     <div className={`${!mobile && !selectedUser && !selectedGroup? 'flex-1': 'hidden'}`}>
                     <div className='text-2xl z-50 w-full h-full flex items-center justify-center gap-2'>
-                      <div><FontAwesomeIcon icon={faComments}/></div>
+                      
                    
-                      <div>Start chatting</div>
+                      <div><p>Hi {user.name}!</p><div><FontAwesomeIcon icon={faComments}/><p>Start chatting</p></div></div>
                       </div>
                         
                     </div>

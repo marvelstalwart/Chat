@@ -7,7 +7,9 @@ const initialState = {
     isSuccess: false,
     isError: false,
     response: null,
-
+    selectedGroup: null,
+    chats: null,
+    
 
 }
 
@@ -38,6 +40,32 @@ export const createGroup = createAsyncThunk("groups/new", async(payload, thunkAP
         return thunkAPI.rejectWithValue(message)
     }
 })
+
+export const getMessages = createAsyncThunk("groups/messages", async(payload, thunkAPI)=> {
+    try {
+        
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.getMessages(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
+
+export const sendMsg = createAsyncThunk("groups/sendMsg", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.sendMsg(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
 export const groupSlice = createSlice({
     name: "groups",
     initialState,
@@ -52,6 +80,12 @@ export const groupSlice = createSlice({
             },
             changeGroup : (state, action)=>{
                 state.selectedGroup = action.payload
+            },
+            resetGroup: (state)=> {
+             state.selectedGroup = null   
+            },
+            addChat: (state, action)=> {
+                state.chats = action.payload
             }
 
     },
@@ -83,7 +117,34 @@ export const groupSlice = createSlice({
             state.isLoading= false
             state.response = action.payload
         })
+        .addCase(getMessages.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(getMessages.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.chats = action.payload
+            
+        })
+        .addCase(getMessages.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
+        .addCase(sendMsg.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(sendMsg.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(sendMsg.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
     }
 })
-export const {reset, changeGroup} = groupSlice.actions
+export const {reset, changeGroup, resetGroup, addChat} = groupSlice.actions
 export default groupSlice.reducer

@@ -29,7 +29,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
   
   
     const [emojiPicker, setEmojiPicker] = useState(false)
-   
+    const [typing, setTyping] = useState(false)
     const {user} = useSelector((state)=> state.auth)
     let {messages, chat, chats} = useSelector((state)=> state.messages)
    
@@ -41,6 +41,20 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
         setEmojiPicker(!emojiPicker)
     } 
 
+
+    useEffect(()=> {
+        if (selectedUser) {
+
+            if (message && message.length) {
+                
+            socket.current?.emit("typing", selectedUser._id)
+    
+        }
+        else {
+            socket.current?.emit("stop-typing", selectedUser._id)
+        }
+        }
+    },[message])
     useEffect(()=> {
        
           
@@ -49,11 +63,20 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
       
         //Emit the message received socket
         if (socket.current){
+            socket.current.on("typing", ()=> {
+                setTyping(true)
+
+                
+            })
+            socket.current.on("stop-typing", ()=> {
+                setTyping(false)
+                
+            })
             socket.current?.on("msg-received", (message)=> {
-           console.log(chat)
+           
            chat = [...chat];
            chat.push({fromSelf:false, message: message})
-           console.log(chat)
+           
            dispatch(addMessage(chat)) 
                
             } )
@@ -106,9 +129,10 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
     
 
     useEffect(()=> {
+        
        if (selectedUser) {
            
-           
+           console.log("1-1 chat mounted")
             dispatch(getChat({from:user._id, to: selectedUser._id}))
     
        }
@@ -184,13 +208,12 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
     }
 
 
-    const handleTyping =() => {
-        socket.current.emit("typing", `${user._id} is typing`)
-    }
+
+    
 
   return (
                     <div className=" h-screen w-full lg:p-4">
-                            <div className='h-full w-full flex flex-col lg:rounded-xl  relative'>
+                            <div className='h-full w-full flex flex-col lg:rounded-xl  bg-white relative'>
                         {selectedUser&& <>
                             {calling && <MyVideo1 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded} leaveCall={leaveCall} /> }
                     
@@ -207,8 +230,11 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 <div onClick={()=> navigate(`user/${selectedUser.nickname.toLowerCase()}`,{state:{selectedUser}})} className='flex items-center gap-2 font-medium w-full cursor-pointer'>
                
                 <BigHead className='w-[2rem]' {...selectedUser.avatarImage}/>
+                <div>
                 <div className=''>{selectedUser && selectedUser.nickname}</div>
+                {typing?<div className='text-xs font-light'>is typing...</div>:null}
 
+                </div>
                 </div>
                 </div>
 
@@ -221,7 +247,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 </div>
 
                 </div>
-                <div className='bg-white flex-1 relative w-full overflow-y-scroll'>
+                <div className='bg-white flex-1 relative w-full overflow-y-auto'>
                 {chat && chat.map((chat, index)=> {
                     
                     
@@ -243,8 +269,8 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
 
 
 
-                <input onKeyDown={handleTyping} value={message} onChange={(e)=> setMessage(e.target.value)} className=' p-4 bg-gray-100  w-full overflow-y-visible outline-none' type="text" placeholder='Type here...'/>
-                <FontAwesomeIcon icon={faPaperPlane} size="lg" className="absolute pr-4 text-gray-500"/>
+                <input  value={message} onChange={(e)=> setMessage(e.target.value)} className=' p-4 bg-gray-100  w-full overflow-y-auto outline-none' type="text" placeholder='Type here...'/>
+                <FontAwesomeIcon onClick={sendChat} icon={faPaperPlane} size="lg" className="absolute pr-4 text-gray-500 cursor-pointer"/>
 
 
 

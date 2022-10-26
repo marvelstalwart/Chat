@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
+import { resetChat } from '../../../features/users/usersSlice'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {AnimatePresence, motion} from "framer-motion"
@@ -26,13 +27,19 @@ export default function Groups({searchValue}) {
       console.log(groups)
     },[groups])
     
-    
+    const handleClick = ()=> {
+      dispatch(resetChat())
+      dispatch(changeGroup())
+     
+  
+  
+     }
    
     return (
     <motion.div initial={{x:-200}} animate={{x:0}} className= "relative h-full" >
       {groups && groups.map((group, index)=> {
         return group.map((group)=> {
-          return <div onClick={()=>dispatch(changeGroup(group._id))} className='p-3 flex gap-2 items-center cursor-pointer' key={index}>
+          return <div onClick={()=>dispatch(changeGroup(group))} className='p-3 flex gap-2 items-center cursor-pointer' key={index}>
             <div className='w-[3rem]'>
               <Avatar name={group.name} size='40' round={true}/>
               

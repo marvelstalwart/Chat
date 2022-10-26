@@ -54,14 +54,14 @@ const [userDetails, setUserDetails] = useState({
 
   console.log(location.state)
   return (
-    <motion.div initial={{x:-200}} animate={{x:0}} className='absolute z-40 bg-white top-0 left-0  w-full lg:w-80'>
+    <motion.div initial={{x:-200}} animate={{x:0}} className='absolute bg-white z-40 h-full top-0 left-0  w-full lg:w-80'>
       <div className='absolute flex items-center w-full h-20 top-0  left-0 bg-white'>
       <div className='flex items-center gap-2 px-2 font-bold'>
        <FontAwesomeIcon onClick={()=> setShowProfile(false)} icon={faArrowLeft}/>
         PROFILE</div>
       </div>
-        <div className='h-screen'>
-          <div className=' h-full pt-28'>
+        <div className='h-full'>
+          <div className=' h-full pt-16'>
             <div className='flex flex-col items-center'>
             <div className=' w-48'><BigHead {...user.avatarImage}/>
               </div>
@@ -114,7 +114,7 @@ const [userDetails, setUserDetails] = useState({
             </div>
 
 
-            <div className='flex justify-center'><button onClick={()=> handleLogout()} className='bg-red-500 p-3 text-white font-bold rounded-md'>Log out</button></div>
+            <div className='flex justify-center'><button onClick={()=> handleLogout()} className='bg-red-500 p-3 text-white font-medium rounded-md'>Log out</button></div>
           </div>
           </div>
           </div>

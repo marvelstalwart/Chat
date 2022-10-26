@@ -97,9 +97,30 @@ global.onlineUsers = new Map()
         }) 
 
     socket.on("typing", (data)=> {
-    
-        // socket.broadcast.emit('typingResponse', data)
+        const sendUserSocket = onlineUsers.get(data) 
+            socket.to(sendUserSocket).emit("typing")
+       
     })
+
+    socket.on("stop-typing", (data)=> {
+        const sendUserSocket = onlineUsers.get(data) 
+            socket.to(sendUserSocket).emit("stop-typing")
+       
+    })
+
+    socket.on("join-chat", (id)=> {
+
+        socket.join(id)
+        console.log(`A user joined ${id}`)
+    })
+
+    socket.on("send-groupMsg", (data)=> {
+        socket.to(data.id).emit("message", data.data)
+    })
+    socket.on("group-typing", (data)=> {
+
+    })
+
      socket.on("disconnect", (userId)=> {
         // onlineUsers = onlineUsers.filter((user)=> user.socketID !==socket.id )
         // io.emit("newUserResponse", onlineUsers)

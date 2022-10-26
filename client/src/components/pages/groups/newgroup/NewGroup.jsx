@@ -44,7 +44,7 @@ export default function NewGroup({setGroupModal}) {
       if (!users) {
         dispatch(getUsers(user))
       } 
-      if (members && members.length == 0 || groupName && groupName.length < 2){
+      if ((members && members.length === 0) ||( groupName && groupName.length < 2)){
         setDisabled(true)
       }
       else {setDisabled(false)}
@@ -83,7 +83,7 @@ export default function NewGroup({setGroupModal}) {
     >
      <div className=' p-2 rounded-md h-full  relative '>
         <div className=' h-full flex flex-col gap-2'>
-          <FontAwesomeIcon onClick={()=> setGroupModal(false)} className="absolute top-0 right-0 " icon={faTimesCircle} size="xl" />
+          <FontAwesomeIcon onClick={()=> setGroupModal(false)} className="absolute top-0 right-0 cursor-pointer" icon={faTimesCircle} size="xl" />
           <div className='font-bold text-xs text-center'>Create a group</div>
           <input onChange={(e)=> setGroupName(e.target.value)} type="text" placeholder='Group name' className='outline-0 border-2 bg-gray-100 border-gray-200 p-3 rounded-lg w-full' />
           <div className='font-bold text-xs text-center'>Add participants</div>
