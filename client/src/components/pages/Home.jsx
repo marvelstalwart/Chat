@@ -75,7 +75,7 @@ export default function Home() {
  
   },[isError, dispatch, user])
   
-  console.log(lipColor)
+  
   const handleResize =()=> {
     if (window.innerWidth < 720 ) {
         
@@ -98,12 +98,11 @@ export default function Home() {
     window.addEventListener("resize", handleResize)
   },[mobile])
 
-console.log(user)
 
   useEffect(()=> {
 
     if (mobile) {
-      console.log(mobile)
+     
       socket.current?.on("callUser", (data)=> {
         console.log("Incoming call")
         navigator.mediaDevices.getUserMedia({video:true, audio: true}).then((stream)=>{

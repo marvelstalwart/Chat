@@ -68,6 +68,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
 
                 
             })
+            console.log(chat)
             socket.current.on("stop-typing", ()=> {
                 setTyping(false)
                 

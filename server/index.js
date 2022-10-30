@@ -95,7 +95,7 @@ global.onlineUsers = new Map()
  
             socket.to(sendUserSocket).emit("callAccepted", data.signal)
         }) 
-
+ 
     socket.on("typing", (data)=> {
         const sendUserSocket = onlineUsers.get(data) 
             socket.to(sendUserSocket).emit("typing")
@@ -115,7 +115,8 @@ global.onlineUsers = new Map()
     })
 
     socket.on("send-groupMsg", (data)=> {
-        socket.to(data.id).emit("message", data.data)
+        console.log(` ${data.data}`)
+        socket.broadcast.to(data.groupId).emit("message", data.data)
     })
     socket.on("group-typing", (data)=> {
 

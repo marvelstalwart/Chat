@@ -236,6 +236,52 @@ module.exports.addAdmins = async(req,res)=> {
     
     
 }
+//Get Members with Membership rights
+module.exports.getMembers = async (req,res)=> {
+    const {userId, groupId} = req.body 
+    if (userId && groupId) {
+        const isMember = await groupModel.find({
+            members: userId
+        })
+
+        if (isMember && isMember.length) {
+           
+             groupModel.aggregate([
+                    
+                    {$match: {_id: ObjectId(groupId)} },
+
+                    {
+                        $project: {
+                            _id: 0,
+                            members: 1,
+                            admins:1,
+                            creator: 1
+                            
+                        }
+                    }
+
+                       
+
+
+                ]).then((result)=> {
+
+                groupModel.populate(result, {path: "members", select: "nickname avatarImage about"})
+                .then(([members])=> {
+                    res.status(200).json(members)
+                    
+                })
+                })
+                
+
+        }
+        else {
+            res.status(401).json({message: "Not authorized"})
+        }
+    }
+    else {
+        res.status(400).json({message: "Bad request"})
+    }
+}
 
 //Add new members with Admin rights
 module.exports.addMembers = async(req, res)=> {
@@ -267,7 +313,7 @@ module.exports.addMembers = async(req, res)=> {
 //Remove members from group with Admin rights
 module.exports.removeMembers = async(req, res)=> {
     const {groupId, userId, members} = req.body
-    if (groupId && id && members) {
+    if (groupId && userId && members) {
        const isAdmin = await groupModel.find({
         _id: groupId,
         admins: userId

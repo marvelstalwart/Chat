@@ -5,7 +5,7 @@ const groupSchema = new Schema({
     name: {type: String, required: true},
     members: [{type: Schema.Types.ObjectId, required: true, ref: 'Users'}],
      
-    creator: {type:Schema.Types.ObjectId, required: true },
+    creator: {type:Schema.Types.ObjectId, required: true, ref: 'Users' },
     admins:[{type:Schema.Types.ObjectId, required: true}],
     groupPhoto: {type: String, default:""}
 

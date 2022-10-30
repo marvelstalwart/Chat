@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const{createGroup, getUserGroups, getGroups, updateGroup, removeMembers,removeAdmins, addMembers, addAdmins, addGroupMessage, messages} = require("../controllers/groupsController")
+const{createGroup,getMembers, getUserGroups, getGroups, updateGroup, removeMembers,removeAdmins, addMembers, addAdmins, addGroupMessage, messages} = require("../controllers/groupsController")
 const {protect} = require("../middleware/authMiddleware")
 router.post("/create", createGroup)
 router.post("/update", updateGroup)
@@ -11,4 +11,5 @@ router.post("/get", getGroups)
 router.post("/members/add", addMembers)
 router.post("/messages/new",addGroupMessage)
 router.post("/messages/get",messages)
+router.post("/members/get", getMembers)
   module.exports= router  

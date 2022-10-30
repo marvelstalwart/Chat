@@ -6,6 +6,7 @@ import { io } from 'socket.io-client'
 import { faArrowLeft, faPaperPlane, faFaceSmile} from '@fortawesome/free-solid-svg-icons'
 import Avatar from 'react-avatar'
 import Picker from "emoji-picker-react"
+import { AnimatePresence } from 'framer-motion'
 import GroupInfo from '../groupinfo/GroupInfo'
 import { resetGroup, addChat } from '../../../../features/groups/groupSlice'
 import { getMessages, sendMsg } from '../../../../features/groups/groupSlice'
@@ -14,7 +15,7 @@ import { BigHead } from '@bigheads/core'
 export default function GroupChat() {
     
     const {user} = useSelector(state=> state.auth)
-    let {selectedGroup, chats}  =useSelector(state=> state.groups)
+    let {selectedGroup, chats}  =useSelector((state)=> state.groups)
     const [message, setMessage] = useState("")
     let dispatch = useDispatch()
     const socket = useRef()
@@ -33,24 +34,8 @@ export default function GroupChat() {
         if(selectedGroup) {
             socket.current = io("http://localhost:5000")
             socket.current?.emit("join-chat", selectedGroup._id)
-    
-            socket.current.on("message", (data)=> {
-                //Only for users that are not the current User
-                if (data.id !== user._id) {
-                    
-                    chats = [...chats];
-                    chats.push({fromSelf:false, message: data.message, details: {
-                        avatarImage: data.avatarImage,
-                        nickname: data.nickname,
-                        _id: data.id
-                    }})
-                    
-                    
-                    dispatch(addChat(chats)) 
-
-                }
-                
-            })
+            
+           
      
             const payload = {
                 userId: user._id,
@@ -63,7 +48,39 @@ export default function GroupChat() {
     },[selectedGroup])
     
    
+    useEffect(()=> {
+       
+        socket.current?.on("message", (data)=> {
+                console.log("Incoming message")
+                   chats = [...chats];
+                        chats.push({fromSelf:false, message: data.message, details: {
+                     avatarImage: data.avatarImage,
+                     nickname: data.nickname,
+                     _id: data.id
+               }})
+                dispatch(addChat(chats)) 
+            console.log(chats)
+             
+            //Only for users that are not the current User
+            // if (data.id !== user._id) {
+                
+                
+            //     chats = [...chats];
+               
+            //     chats.push({fromSelf:false, message: data.message, details: {
+            //         avatarImage: data.avatarImage,
+            //         nickname: data.nickname,
+            //         _id: data.id
+            //     }})
+                
+            //     dispatch(addChat(chats)) 
+            //    console.log(chats)
+            // }
+            
+        })
 
+    },[chats?.details])
+ 
     const handleEmoji = ()=> {
         setEmojiPicker(!emojiPicker)
     }
@@ -73,35 +90,38 @@ export default function GroupChat() {
         let msg = message
         msg+=emoji.emoji
         setMessage(msg)
-    }
+    } 
    
     const sendChat = (e)=> {
         
         e.preventDefault()
-        setMessage("")
         if (message.length> 0){
-                
+            console.log(chats)
 
-                 dispatch(sendMsg({from:user._id, groupId: selectedGroup._id, message: message, userId: user._id}))
-                chats = [...chats];
-                chats.push({fromSelf:true, message: message})
-                dispatch(addChat(chats)) 
-
-                setMessage("");
+            //  dispatch(sendMsg({from:user._id, groupId: selectedGroup._id, message: message, userId: user._id}))
                 
-                let payload = {id:selectedGroup._id, data: {
+            
+            
+            
+            
+                let payload = {groupId:selectedGroup._id, data: {
                     message:message, avatarImage: user.avatarImage,
                     nickname: user.name, id: user._id
-
+                    
                     }
                     }
                 socket.current.emit("send-groupMsg", payload)
-               
-        }
-        else {
+               chats = [...chats]
+                chats.push({fromSelf:true, message: message})
+                dispatch(addChat(chats)) 
+                console.log(chats)
+                setMessage("");
+            }
+            else { 
             setMessage("");
             
-
+            
+            
         }
     }
 
@@ -110,7 +130,13 @@ export default function GroupChat() {
 
   return (
     <div className=" h-screen w-full lg:p-4">
+         <AnimatePresence
+            initial={false}
+            exitBeforeEnter={true}
+            onExitComplete={()=> null}
+           >
          {showGroupInfo ? <GroupInfo setShowGroupInfo={setShowGroupInfo} selectedGroup={selectedGroup} /> : null }
+         </AnimatePresence>
         {selectedGroup && 
         
         <div className='h-full w-full flex flex-col lg:rounded-xl bg-white relative'>

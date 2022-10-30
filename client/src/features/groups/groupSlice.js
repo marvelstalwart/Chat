@@ -9,6 +9,8 @@ const initialState = {
     response: null,
     selectedGroup: null,
     chats: null,
+    group: null,
+
     
 
 }
@@ -28,6 +30,18 @@ export const getGroups = createAsyncThunk("groups/get", async (_, thunkAPI)=> {
         return thunkAPI.rejectWithValue(message)
 
     }
+
+})
+export const getMembers = createAsyncThunk ("groups/members", async(payload, thunkAPI)=>{
+    try {
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.getMembers(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
 
 })
 export const createGroup = createAsyncThunk("groups/new", async(payload, thunkAPI)=> {
@@ -66,6 +80,44 @@ export const sendMsg = createAsyncThunk("groups/sendMsg", async(payload, thunkAP
     }
 
 })
+export const setAdmin = createAsyncThunk("groups/admins/add", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.setAdmin(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
+
+export const removeAdmin = createAsyncThunk("groups/admins/remove", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.removeAdmin(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
+export const removeMember = createAsyncThunk("groups/members/remove", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.removeMember(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
+
 export const groupSlice = createSlice({
     name: "groups",
     initialState,
@@ -86,6 +138,9 @@ export const groupSlice = createSlice({
             },
             addChat: (state, action)=> {
                 state.chats = action.payload
+                console.log(action.payload)
+                console.log(state.chats)
+                
             }
 
     },
@@ -117,6 +172,19 @@ export const groupSlice = createSlice({
             state.isLoading= false
             state.response = action.payload
         })
+        .addCase(getMembers.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(getMembers.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.group = action.payload
+        })
+        .addCase(getMembers.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
         .addCase(getMessages.pending,(state)=> {
             state.isLoading =true
         })
@@ -140,6 +208,45 @@ export const groupSlice = createSlice({
             state.response = action.payload
         })
         .addCase(sendMsg.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
+        .addCase(setAdmin.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(setAdmin.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(setAdmin.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
+        .addCase(removeAdmin.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(removeAdmin.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(removeAdmin.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
+        .addCase(removeMember.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(removeMember.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(removeMember.rejected, (state, action)=> {
             state.isError = true
             state.isLoading= false
             state.response = action.payload

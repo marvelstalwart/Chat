@@ -27,9 +27,9 @@ export default function Groups({searchValue}) {
       console.log(groups)
     },[groups])
     
-    const handleClick = ()=> {
+    const handleClick = (group)=> {
       dispatch(resetChat())
-      dispatch(changeGroup())
+      dispatch(changeGroup(group))
      
   
   
@@ -39,7 +39,7 @@ export default function Groups({searchValue}) {
     <motion.div initial={{x:-200}} animate={{x:0}} className= "relative h-full" >
       {groups && groups.map((group, index)=> {
         return group.map((group)=> {
-          return <div onClick={()=>dispatch(changeGroup(group))} className='p-3 flex gap-2 items-center cursor-pointer' key={index}>
+          return <div onClick={()=>handleClick(group)} className='p-3 flex gap-2 items-center cursor-pointer' key={index}>
             <div className='w-[3rem]'>
               <Avatar name={group.name} size='40' round={true}/>
               

@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react'
 import {motion} from "framer-motion"
 import { useSelector, useDispatch } from 'react-redux'
 import { getChats } from '../../../features/messages/messageSlice'
+import { resetGroup } from '../../../features/groups/groupSlice'
 export default function Chats({ changeChat, searchValue}) {
     let dispatch = useDispatch()
     const {user} = useSelector((state)=> state.auth)
-    const {chats} = useSelector((state)=> state.messages)
+
+    const {chats, isLoading} = useSelector((state)=> state.messages)
+    const {selectedGroup}  = useSelector(state=> state.groups)
      const [searchedMessage, setSearchedMessage] = useState() 
    
     useEffect(()=>{
@@ -32,20 +35,24 @@ export default function Chats({ changeChat, searchValue}) {
             
         
         },[])
-  
+        const handleClick =(user)=> {
+          dispatch(resetGroup())
+          
+            dispatch(changeChat(user))
+        }
 
     return (
     <div>     
      
     {
-      chats && chats.length> 0? 
+      !isLoading && chats && chats.length> 0? 
       <motion.div initial={{x: -200}} animate={{x: 0}} className='flex w-full '>
         <div className='w-80'>
 
       
          {searchValue ? searchedMessage && searchedMessage.length> 0 ? searchedMessage.map((chat)=> {
 
-                  return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
+                  return  <div onClick={()=>handleClick(chat.to._id === user._id? chat.sender : chat.to)} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
                   <div className='w-[3rem]'>
                     {chat.to._id ===user._id? 
                     <BigHead {...chat.sender.avatarImage}/>
@@ -79,7 +86,7 @@ export default function Chats({ changeChat, searchValue}) {
          
          : chats.map((chat)=> {
         
-          return  <div onClick={()=>dispatch(changeChat(chat.to._id === user._id? chat.sender : chat.to))} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
+          return  <div onClick={()=>handleClick(chat.to._id === user._id? chat.sender : chat.to)} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
           <div className='w-[3rem]'>
             {chat.to._id ===user._id? 
             <BigHead {...chat.sender.avatarImage}/>
@@ -108,7 +115,15 @@ export default function Chats({ changeChat, searchValue}) {
     </motion.div>  
         
       :
+      isLoading ?
       
+        <div class="flex items-center h-full justify-center ">
+      <div class="w-16 h-16 border-b-2 border-gray-900 rounded-full animate-spin"></div>
+      </div>
+        
+      
+      :
+
       <div className='p-2 font-bold  h-full flex items-center justify-center'>
       <div className=''>You do not have any Chats yet!
       </div>
