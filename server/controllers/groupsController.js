@@ -34,12 +34,14 @@ module.exports.createGroup = async(req, res)=> {
 //Send new Group Message with Member Rights
 module.exports.addGroupMessage = async (req, res)=> {
     const {groupId, from, message, userId} = req.body
+    
     if (groupId && from && message && userId) { 
     const isMember = await groupModel.find({
         _id: groupId,
         members: userId
     })
     if (isMember && isMember.length) {
+        
         
             let newMessage = new messageModel ({
                 
@@ -51,6 +53,7 @@ module.exports.addGroupMessage = async (req, res)=> {
         
         newMessage.save()
         .then((message)=> {
+            console.log(message)
             res.status(201).json(`Successfully created ${message}`)
         }) 
         .catch((err)=>{
@@ -139,6 +142,7 @@ module.exports.getGroups = async (req,res)=> {
                                "lastMessage": {
                                    "$last": "$message"
                                },
+
                                "messages": {
                                    "$push" : "$message"
                                },
@@ -174,8 +178,9 @@ module.exports.getGroups = async (req,res)=> {
         return res.status(200).json(projectedGroupMsgs)
        
     }
+
     else {
-        res.status(404).json({message: "User does not belong to any group"})
+        res.status(200).json(groups)
     }
        
     }
@@ -334,6 +339,37 @@ module.exports.removeMembers = async(req, res)=> {
         }
         else {
             res.status(401).json({message: "Not authorized"})
+        }
+         }
+         else {
+            res.status(400).json({message: "Empty fields"})
+        }
+}
+
+//Leave Group
+module.exports.leaveGroup = async(req, res)=> {
+    const {groupId, userId} = req.body
+    if (groupId && userId ) {
+       const isMember = await groupModel.find({
+        _id: groupId,
+        members: userId
+       })
+      
+         
+        if (isMember && isMember.length) {
+            try{
+            
+                const updatedMembers =  await groupModel.updateOne({_id: groupId}, {
+                    $pull: {members: {$in: userId}}
+                })
+                res.status(200).json(updatedMembers)
+            }
+            catch(err) {
+                res.status(400).json({message: err.message})
+            }
+        }
+        else {
+            res.status(401).json({message: "Not a member"})
         }
          }
          else {

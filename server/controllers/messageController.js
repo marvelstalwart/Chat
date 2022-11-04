@@ -1,8 +1,9 @@
 const messageModel = require("../models/messageModel")
 const userModel = require("../models/userModel")
 module.exports.addMessage = async (req, res)=> {
-
+    
     const {from, to, message,} = req.body
+    
     if (from && to && message) {
         let newMessage = new messageModel ({
             users: [from, to],

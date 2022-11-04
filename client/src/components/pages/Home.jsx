@@ -33,7 +33,7 @@ export default function Home() {
   const socket = useRef()
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const {faceMask, lipColor} = useSelector(state=> state.avatar)
+  const avatar = useSelector(state=> state.avatar)
   const {user} = useSelector(state=> state.auth)
   const{selectedGroup} =useSelector(state=> state.groups)
   const { users, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
@@ -55,13 +55,16 @@ export default function Home() {
   const [mobile, setMobile] = useState(false)
  
   useEffect(()=> {
-    
+   
       if (user) {
         socket.current = io("http://localhost:5000")
           socket.current.emit("newUser", user._id)
          
        
        
+      }
+      else  {
+        
       }
    
       if (isError) {
@@ -180,7 +183,7 @@ const leaveCall = ()=> {
 
     <>
          
-             <div className='bg-gray-100 text-gray-800 flex w-full h-full gap-1'>
+             <div className='bg-[#F5F6FA] text-gray-800 flex w-full h-full gap-1'>
               {mobile && callAccepted && !callEnded ?<UserVideo userVideo={userVideo} leaveCall={leaveCall}/> :null }
 
               {callVideo && <MyVideo2 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded}/> }
@@ -191,11 +194,13 @@ const leaveCall = ()=> {
               
 
               <div className={`${mobile && selectedUser || mobile && selectedGroup ? 'hidden' : mobile ? 'w-full flex flex-col': 'flex flex-col w-80 gap-1' }   `}>
-              <section title='logo' className='flex  justify-between items-center'>
+              <section className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-xl p-2'>Yarn</h1>
               <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> setShowProfile(true)}>
               
-              <BigHead className='w-[2rem]' {...user.avatarImage}/>
+                <BigHead className='w-[2rem]' {...user.avatarImage }/>
+                
+               
               </div>
               {showProfile && <MyProfile user={user} setShowProfile={setShowProfile}/>}
               
@@ -205,10 +210,11 @@ const leaveCall = ()=> {
                <input onChange={(e)=>setSearchValue(e.target.value)} className='bg-white w-full p-3 px-8 rounded-3xl outline-0' type="text" placeholder='SEARCH'/>
         
              </section>
+            
              <div className='p-2 font-bold flex justify-around'>
-              <div onClick={displayChats} className='cursor-pointer'>Messages</div> 
-             <div onClick = {displayGroups} className='cursor-pointer'>Groups</div> 
-             <div  onClick={displayUsers} className='cursor-pointer'>Users</div>
+              <div onClick={displayChats} className={` ${showMessages ? ' text-black cursor-pointer': 'text-sky-800 cursor-pointer'}`}>Messages</div> 
+             <div onClick = {displayGroups} className={` ${showGroups ? ' text-black cursor-pointer': 'text-sky-800 cursor-pointer'}`}>Groups</div> 
+             <div  onClick={displayUsers} className={` ${showUsers ? ' text-black cursor-pointer': 'text-sky-800 cursor-pointer'}`}>Users</div>
               </div>
              
              
@@ -219,8 +225,8 @@ const leaveCall = ()=> {
              <section   className='p-2 flex-1  overflow-y-auto'>
               <div className='bg-white h-full rounded-lg '>
 
-              {showMessages && <Chats changeChat={changeChat} searchValue={searchValue}/>}
-              {showUsers && <Users setShowUsers={setShowUsers} searchValue={searchValue}/>}
+              {showMessages && <Chats changeChat={changeChat} mobile={mobile} setShowUsers={setShowUsers} setShowGroups={setShowGroups} setShowMessages={setShowMessages} searchValue={searchValue} socket={socket}/>}
+              {showUsers && <Users setShowUsers={setShowUsers}  searchValue={searchValue}/>}
               {showGroups && <Groups searchValue={searchValue}/>}      
                
               </div>
@@ -244,7 +250,17 @@ const leaveCall = ()=> {
                     <div className='text-2xl z-50 w-full h-full flex items-center justify-center gap-2'>
                       
                    
-                      <div><p>Hi {user.name}!</p><div><FontAwesomeIcon icon={faComments}/><p>Start chatting</p></div></div>
+                      <div>
+                      <BigHead className='w-[20rem]' {...user.avatarImage }/>
+                      <p className='text-center'>Hi {user.name}!</p>
+                      
+                      <div className='flex justify-center '>
+                        <div onClick={displayUsers} className='bg-blue w-fit text-white  p-2 text-sm flex items-center gap-2'>
+                         <p>Start chatting</p><FontAwesomeIcon icon={faComments}/>
+                        </div>
+                         
+                        </div>
+                        </div>
                       </div>
                         
                     </div>

@@ -4,9 +4,9 @@ import socketIO from 'socket.io-client'
 const initialState = {
     users: null,
     user: null,
-    isLoading: false,
-    isError: false,
-    isSuccess: false,
+    userLoading: false,
+    userError: false,
+    userSuccess: false,
     message: '',
     messages: null,
     selectedUser:null,
@@ -50,10 +50,10 @@ export const usersSlice = createSlice({
     reducers: {
         reset: (state) => {
             state.users=null
-            state.isLoading= false
-            state.isError= false
-            state.isSuccess= true
-           state.message= ''
+            state.userLoading= false
+            state.userError= false
+            state.userSuccess= false
+             state.message= ''
         },
         resetChat: (state)=> {
             state.selectedUser =null
@@ -66,33 +66,33 @@ export const usersSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(getUsers.pending, (state)=> {
-            state.isLoading= true
+            state.userLoading= true
 
         }) 
         .addCase(getUsers.fulfilled, (state, action)=> {
-            state.isLoading= false
-            state.isSuccess = true
+            state.userLoading= false
+            state.userSuccess = true
             state.users = action.payload
         })
 
         .addCase(getUsers.rejected, (state, action)=> {
-            state.isLoading = false
-            state.isError= true
+            state.userLoading = false
+            state.userError= true
             state.message = action.payload
         })
         .addCase(getUser.pending, (state)=> {
-            state.isLoading= true
+            state.userLoading= true
 
         }) 
         .addCase(getUser.fulfilled, (state, action)=> {
-            state.isLoading= false
-            state.isSuccess = true
+            state.userLoading= false
+            state.userSuccess = true
             state.user = action.payload
         })
 
         .addCase(getUser.rejected, (state, action)=> {
-            state.isLoading = false
-            state.isError= true
+            state.userLoading = false
+            state.userError= true
             state.message = action.payload
         })
 

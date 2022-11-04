@@ -68,18 +68,7 @@ export const getMessages = createAsyncThunk("groups/messages", async(payload, th
 
 })
 
-export const sendMsg = createAsyncThunk("groups/sendMsg", async(payload, thunkAPI)=> {
-    try {
-       
-        const {token } = thunkAPI.getState().auth.user
-        return await groupService.sendMsg(payload, token)
-    }
-    catch(err) {
-        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
-        return thunkAPI.rejectWithValue(message)
-    }
 
-})
 export const setAdmin = createAsyncThunk("groups/admins/add", async(payload, thunkAPI)=> {
     try {
        
@@ -105,11 +94,35 @@ export const removeAdmin = createAsyncThunk("groups/admins/remove", async(payloa
     }
 
 })
+export const addMembers = createAsyncThunk("groups/members/add", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.addMembers(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
 export const removeMember = createAsyncThunk("groups/members/remove", async(payload, thunkAPI)=> {
     try {
        
         const {token } = thunkAPI.getState().auth.user
         return await groupService.removeMember(payload, token)
+    }
+    catch(err) {
+        const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+
+})
+export const leaveGroup = createAsyncThunk("groups/leave", async(payload, thunkAPI)=> {
+    try {
+       
+        const {token } = thunkAPI.getState().auth.user
+        return await groupService.leaveGroup(payload, token)
     }
     catch(err) {
         const message = (err.response && err.response.data && err.response.data.message)|| err.message || err.toString()
@@ -199,19 +212,7 @@ export const groupSlice = createSlice({
             state.isLoading= false
             state.response = action.payload
         })
-        .addCase(sendMsg.pending,(state)=> {
-            state.isLoading =true
-        })
-        .addCase(sendMsg.fulfilled, (state, action)=> {
-            state.isLoading =false
-            state.isSuccess = true
-            state.response = action.payload
-        })
-        .addCase(sendMsg.rejected, (state, action)=> {
-            state.isError = true
-            state.isLoading= false
-            state.response = action.payload
-        })
+        
         .addCase(setAdmin.pending,(state)=> {
             state.isLoading =true
         })
@@ -238,6 +239,19 @@ export const groupSlice = createSlice({
             state.isLoading= false
             state.response = action.payload
         })
+        .addCase(addMembers.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(addMembers.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(addMembers.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
         .addCase(removeMember.pending,(state)=> {
             state.isLoading =true
         })
@@ -247,6 +261,19 @@ export const groupSlice = createSlice({
             state.response = action.payload
         })
         .addCase(removeMember.rejected, (state, action)=> {
+            state.isError = true
+            state.isLoading= false
+            state.response = action.payload
+        })
+        .addCase(leaveGroup.pending,(state)=> {
+            state.isLoading =true
+        })
+        .addCase(leaveGroup.fulfilled, (state, action)=> {
+            state.isLoading =false
+            state.isSuccess = true
+            state.response = action.payload
+        })
+        .addCase(leaveGroup.rejected, (state, action)=> {
             state.isError = true
             state.isLoading= false
             state.response = action.payload

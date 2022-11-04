@@ -55,22 +55,37 @@ export default function GroupChat() {
       
         socket.current?.on("message", (data)=> {
           
-        
-                   groupChats = [...groupChats];
+                console.log("Incoming message")
+                console.log(groupChats)
+            //        chats = [...chats];
                    
-                        groupChats.push({fromSelf:false, message: data.message, details: {
-                     avatarImage: data.avatarImage,
-                     nickname: data.nickname,
-                     _id: data.id
-               }})
-                dispatch(addGroupMessage(groupChats)) 
+            //             chats.push({fromSelf:false, message: data.message, details: {
+            //          avatarImage: data.avatarImage,
+            //          nickname: data.nickname,
+            //          _id: data.id
+            //    }})
+                // dispatch(addChat(chats)) 
+          
                
+            //Only for users that are not the current User
+            // if (data.id !== user._id) {
+                 
+                
+            //     chats = [...chats];
                
-           
+            //     chats.push({fromSelf:false, message: data.message, details: {
+            //         avatarImage: data.avatarImage,
+            //         nickname: data.nickname,
+            //         _id: data.id
+            //     }})
+                
+            //     dispatch(addChat(chats)) 
+            //    console.log(chats)
+            // }
             
         })
 
-    },[groupChats])
+    },[dispatch])
  
     const handleEmoji = ()=> {
         setEmojiPicker(!emojiPicker)
@@ -89,7 +104,7 @@ export default function GroupChat() {
         if (message.length> 0){
             
 
-             dispatch(sendGroupChat({from:user._id, groupId: selectedGroup._id, message: message, userId: user._id}))
+            //  dispatch(sendMsg({from:user._id, groupId: selectedGroup._id, message: message, userId: user._id}))
                 
             
             
@@ -107,8 +122,8 @@ export default function GroupChat() {
                 groupChats.push({fromSelf:true, message: message})
             
                 dispatch(addGroupMessage(groupChats)) 
-              
-
+                console.log(groupChats)
+                
                 setMessage("");
             }
             else { 
@@ -159,7 +174,7 @@ export default function GroupChat() {
 
     return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} font-light`}>
     
-    <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl max-w-xs' : 'bg-gray-100 max-w-xs rounded-tr-xl'} w-fit  h-fit bg-white p-2 rounded-b-xl `}>
+    <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl' : 'bg-gray-100 rounded-tr-xl'} w-fit h-fit bg-white p-2 rounded-b-xl `}>
         {/* Display other Users messages with their display picture and name */}
     { !chat.fromSelf ? <div className=' flex items-center'>
         <div>

@@ -21,15 +21,13 @@ try {const users = await userModel.find({_id: {$ne: req.body._id}})
 }
 module.exports.getUser = async(req,res)=> {
 
-    const {_id} = req.body
+    const {userId} = req.body
     try {
-        const user = await userModel.find({_id: _id})
-        if (user) {
-            res.status(200).json(user)
-        }
-        else {
-            res.status(404).json({message: "Not found"})
-        }
+       await userModel.find({_id: userId})
+       .then(([result])=> {
+        res.status(200).json(result)
+       })
+        
     }
     catch(err){
         res.status(400).json({message: err.message})
@@ -68,13 +66,27 @@ module.exports.setAvatar = async (req, res)=> {
 
         
         const {id, avatar} = req.body
-        const updateData = await userModel.findByIdAndUpdate(id, {
-            isAvatarImageSet: true,
-            avatarImage: avatar
-        })
+        const data  = await userModel.findOneAndUpdate(
+            {
+                _id: id
+            },
+            {isAvatarImageSet: true,
+            avatarImage: avatar},
+            {new:true}
+            )
+      // Return the updated data with a new user token
+           const updatedData = {
+                _id: data._id,
+                name: data.nickname,
+                about: data.about,
+                avatarImage: data.avatarImage,
+                email: data.email,
+                token: generateToken(data._id)
+
+            }
         
        
-        return res.status(200).json(updateData)
+        return res.status(200).json(updatedData)
     }
     catch(err){
         return res.status(400).json({message: err.message})

@@ -4,7 +4,6 @@ import { Buffer } from "buffer";
 const REGURL = "http://localhost:5000/api/users/register";
 const LOGINURL = "http://localhost:5000/api/users/login";
 const AVATARURL = "http://localhost:5000/api/users/setAvatar";
-const AVATARAPI = "https://api.multiavatar.com/45678945"
 const UPDATE_URL = "http://localhost:5000/api/users/update"
 
 const register = async (payload)=> {
@@ -41,33 +40,26 @@ const setAvatar = async(payload, token) => {
             Authorization: `Bearer ${token}`
         }
     }
-    
+    console.log(config)
 
 
         const response = await axios.post(AVATARURL, payload, config)
+            
+            if (response.data) {
+                localStorage.setItem('user', JSON.stringify(response.data))
+            }
+            
             return response.data
 
 
 }
-const getAvatars = async ()=> {
-    const data = [];
-   
-    for (let i=0; i<5; i++) {
-        const image = await axios.get(`${AVATARAPI}/${Math.round(Math.random()*1000)}`)
-        const buffer = new Buffer(image.data)
-        
-        data.push(buffer.toString("base64"))
-    }
-   
-    return data
 
-}
 const authService = {
     register,
     login,
     logout,
     setAvatar,
-    getAvatars,
+    
     updateUser
 }
 export default authService;

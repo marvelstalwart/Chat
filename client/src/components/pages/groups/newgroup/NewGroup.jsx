@@ -3,7 +3,7 @@ import {useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { BigHead } from '@bigheads/core'
 import { reset } from '../../../../features/groups/groupSlice'
-import { createGroup } from '../../../../features/groups/groupSlice'
+import { createGroup, getGroups } from '../../../../features/groups/groupSlice'
 import { getUsers } from '../../../../features/users/usersSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
@@ -70,6 +70,7 @@ export default function NewGroup({setGroupModal}) {
       const payload = {name: groupName, creator: user._id, members: members}
       dispatch(createGroup(payload))
       if (isSuccess) {
+        dispatch(getGroups())
         setGroupModal(false)
       }
     }

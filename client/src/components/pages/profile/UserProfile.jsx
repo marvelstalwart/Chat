@@ -9,15 +9,18 @@ import { useDispatch, useSelector } from 'react-redux'
 
 
 export default function UserProfile() {
+  
   const {user, isSuccess, isError, isLoading} = useSelector((state)=>state.users)
   let dispatch= useDispatch()
   let navigate = useNavigate()
   let location= useLocation()
+  console.log(user)
   const selectedUser = location.state.selectedUser
-
+  console.log(selectedUser)
   useEffect(()=> {
     console.log(selectedUser._id)
-      dispatch(getUser({_id: selectedUser._id}))
+
+      dispatch(getUser({userId: selectedUser._id}))
      
   },[])
 
@@ -32,10 +35,10 @@ export default function UserProfile() {
        <BigHead  {...selectedUser.avatarImage}/>
            
         <div className='font-medium text-4xl'>{selectedUser.nickname}</div>  
-        <div className='text-xs p-2 flex items-center gap-1'><FontAwesomeIcon icon={faEnvelope}/>{user && user[0].email}</div>
+        <div className='text-xs p-2 flex items-center gap-1'><FontAwesomeIcon icon={faEnvelope}/>{user && user.email}</div>
         <div>
         
-        <div className='p-2 '>{user && user[0].about}</div>
+        <div className='p-2 '>{user && user.about}</div>
         </div>
         <div onClick={()=> navigate(-1)} className='flex items-center  gap-2 px-2 bg-sky-500 text-white rounded-xl p-3'>
      <FontAwesomeIcon  icon={faArrowLeft}/>

@@ -68,15 +68,16 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
 
                 
             })
-            console.log(chat)
+            
             socket.current.on("stop-typing", ()=> {
                 setTyping(false)
                 
             })
-            socket.current?.on("msg-received", (message)=> {
-           
+            socket.current?.on("msg-received", (data)=> {
+           console.log(chat)
            chat = [...chat];
-           chat.push({fromSelf:false, message: message})
+
+           chat.push({fromSelf:false, message: data.message})
            
            dispatch(addMessage(chat)) 
                
@@ -162,14 +163,14 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 socket.current.emit("send-msg", {
                     to: selectedUser._id,
                     from: user._id,
-                    message: message
-                    // id: `${user._id}${Math.random()}`,
-                    // socketID: user._id
+                    message: message 
+                  
                 })
+
                 chat = [...chat];
                 chat.push({fromSelf:true, message: message})
                 dispatch(addMessage(chat)) 
-               
+               console.log(chat)
                 setMessage("");
         }
         else {
@@ -253,7 +254,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                     
                     
                     return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} font-light`}>
-                    <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl' : 'bg-gray-100 rounded-tr-xl'} w-fit h-fit bg-white p-3 rounded-b-xl md:p-6`}>
+                    <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl max-w-xs' : 'bg-gray-100 rounded-tr-xl max-w-xs'} w-fit h-fit bg-white p-3 rounded-b-xl md:p-6`}>
                         {chat.message}
                     </div>
                     <div ref={lastMessageRef}/>

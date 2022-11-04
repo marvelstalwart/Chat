@@ -20,7 +20,7 @@ const getUser = async (payload, token)=> {
         }
     }
 
-    const response = await axios.post(USER_URL, payload, token)
+    const response = await axios.post(USER_URL, payload, config)
     return response.data
 }
 const usersService = {

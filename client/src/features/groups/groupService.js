@@ -2,11 +2,12 @@ import axios from "axios"
 const getGroupsURL = "http://localhost:5000/api/groups/get"
 const createGroupURL = "http://localhost:5000/api/groups/create"
 const getGroupMsgsURL = "http://localhost:5000/api/groups/messages/get"
-const sendMsgURL = "http://localhost:5000/api/groups/messages/new"
 const getMembersURL ="http://localhost:5000/api/groups/members/get"
 const setAdminURL = "http://localhost:5000/api/groups/admins/add"
 const removeAdminURL = "http://localhost:5000/api/groups/admins/remove"
+const leaveGroupURL = "http://localhost:5000/api/groups/leave"
 const removeMemberURL = "http://localhost:5000/api/groups/members/remove"
+const addMembersURL = "http://localhost:5000/api/groups/members/add"
 const getGroups = async (payload, token)=> {
     const config = {
         headers: {
@@ -41,6 +42,7 @@ const getMembers = async(payload, token)=> {
     const response = await axios.post(getMembersURL, payload, config )
     return response.data
 }
+
 const getMessages = async(payload, token)=> {
     const config = {
         headers: {
@@ -52,17 +54,7 @@ const getMessages = async(payload, token)=> {
     return response.data
 }
 
-const sendMsg = async (payload, token)=> {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-       
-    }
-    const response = await axios.post(sendMsgURL, payload, config )
-    return response.data
 
-}
 
 const setAdmin= async (payload, token)=> {
     const config = {
@@ -98,16 +90,39 @@ const removeMember= async (payload, token)=> {
 
 }
 
+const leaveGroup = async(payload, token)=> {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+       
+    }
+    const response = await axios.post(leaveGroupURL, payload, config )
+    return response.data
+}
+
+const addMembers = async(payload, token)=> {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+       
+    }
+    const response = await axios.post(addMembersURL, payload, config )
+    return response.data
+}
 
 const groupService = {
     getGroups,
     createGroup,
     getMessages,
-    sendMsg,
+
     getMembers,
     setAdmin,
     removeAdmin,
-    removeMember
+    removeMember,
+    leaveGroup,
+    addMembers
 }
 
 export default groupService

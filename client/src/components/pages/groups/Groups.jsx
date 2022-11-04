@@ -14,7 +14,30 @@ export default function Groups({searchValue}) {
     let dispatch = useDispatch()
 
     const [showGroupModal, setGroupModal] = useState(false)
-    const {groups} = useSelector(state=> state.groups)
+    const {groups,chats} = useSelector(state=> state.groups)
+    const [searchedMessage, setSearchedMessage] = useState() 
+   
+    
+    
+    useEffect(()=>{
+     
+      console.log(groups)
+          if (searchValue) {
+            // setSearchedMessage(groups.filter(chat=> chat.map(chat=> chat.messages.find((message)=> {
+            //   return message.toLowerCase().includes(searchValue.toLowerCase())
+            // }))) )
+           
+          }
+         
+          // chat.messages.find(message=> {
+          //   return message.toLowerCase().includes(searchValue.toLowerCase())
+          // })))
+        
+        
+      
+    },[searchValue, groups])
+    
+    
     useEffect(()=> {
 
       dispatch(getGroups())
@@ -22,10 +45,8 @@ export default function Groups({searchValue}) {
 
     },[])
     
-    useEffect(()=> {
-    
-      console.log(groups)
-    },[groups])
+
+  
     
     const handleClick = (group)=> {
       dispatch(resetChat())
@@ -37,7 +58,7 @@ export default function Groups({searchValue}) {
    
     return (
     <motion.div initial={{x:-200}} animate={{x:0}} className= "relative h-full" >
-      {groups && groups.map((group, index)=> {
+      {groups && groups.length ? groups.map((group, index)=> {
         return group.map((group)=> {
           return <div onClick={()=>handleClick(group)} className='p-3 flex gap-2 items-center cursor-pointer' key={index}>
             <div className='w-[3rem]'>
@@ -47,13 +68,17 @@ export default function Groups({searchValue}) {
             <div className='w-full'>
             <div>{group.name}</div>
 
-            <div className='text-sm font-light lg:text-xs'>{group.lastMessage ? group.lastMessage.slice(0, 35) + "..." : "No Messages yet"}</div>
+            <div className='text-sm font-light lg:text-xs'>{group.lastMessage ? group.lastMessage.slice(0, 35)  : "No Messages yet"}</div>
             <hr className='w-full'></hr>
             </div>
             
             </div>
            })
-      })}
+      })
+    
+    :
+    <div className='w-full flex justify-center h-full items-center'><p>No groups yet</p></div>
+    }
       <div onClick={()=> setGroupModal(true)} className='absolute bottom-0 right-0 p-2 cursor-pointer'><FontAwesomeIcon className='text-blue' size='2xl' icon={ faCirclePlus}/></div>
            <AnimatePresence
             initial={false}

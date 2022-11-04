@@ -60,10 +60,10 @@ global.onlineUsers = new Map()
         if (sendUserSocket) {
             console.log("socket", sendUserSocket)
             console.log(data.message)
-            socket.to(sendUserSocket).emit("msg-received", data.message)
+            socket.to(sendUserSocket).emit("msg-received", data)
         }
     })
-       
+        
         socket.on("callUser", (data)=> {
             
             const sendUserSocket = onlineUsers.get(data.userToCall)
@@ -118,6 +118,7 @@ global.onlineUsers = new Map()
         console.log(` ${data.data}`)
         socket.broadcast.to(data.groupId).emit("message", data.data)
     })
+
     socket.on("group-typing", (data)=> {
 
     })

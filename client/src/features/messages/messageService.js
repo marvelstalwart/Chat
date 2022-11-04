@@ -2,6 +2,8 @@
 const addMessageURI = "http://localhost:5000/api/messages/new"
 const getChatURL = "http://localhost:5000/api/messages/chat"
 const getChatsURL = "http://localhost:5000/api/messages/getchats"
+const getGroupChatsURL = "http://localhost:5000/api/groups/messages/get"
+const sendGroupMsgURL = "http://localhost:5000/api/groups/messages/new"
 const  newMessage = async (payload, token)=> {
 
    const config = {
@@ -50,10 +52,37 @@ const getChats = async(payload, token)=> {
     return response.data
 
 }
+
+const getGroupChats = async(payload, token)=> {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+       
+    }
+    const response = await axios.post(getGroupChatsURL, payload, config )
+    return response.data
+}
+
+const sendGroupChat = async (payload, token)=> {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+       
+    }
+    const response = await axios.post(sendGroupMsgURL, payload, config )
+    return response.data
+
+}
+
+
 const messageService = {
     newMessage,
     getChat,
-    getChats
+    getChats,
+    getGroupChats,
+    sendGroupChat
 }
 
 
