@@ -4,6 +4,7 @@ import socketIO from 'socket.io-client'
 const initialState = {
     users: null,
     user: null,
+    onlineUsers: [],
     userLoading: false,
     userError: false,
     userSuccess: false,
@@ -61,6 +62,9 @@ export const usersSlice = createSlice({
         changeChat: (state, action)=> {
             state.selectedUser= action.payload
             
+        },
+        updateOnlineUsers:(state, action)=> {
+            state.onlineUsers=action.payload
         }
     },
     extraReducers: (builder) => {
@@ -100,5 +104,5 @@ export const usersSlice = createSlice({
     }
     
 })
-export const { changeChat, resetChat} = usersSlice.actions;
+export const { changeChat, resetChat, updateOnlineUsers} = usersSlice.actions;
 export default usersSlice.reducer;

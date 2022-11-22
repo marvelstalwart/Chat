@@ -86,14 +86,31 @@ module.exports.messages = async (req,res)=> {
                     groupId: groupId
                 })
                 
+                messages =await Promise.all( messages.map( async(msg)=>{
+                    if (msg.sender.toString() !== userId && !msg.readBy.includes(userId)) {
+                            
+                        return await messageModel.findByIdAndUpdate(
+                            { _id: msg._id },
+                            { $push: { readBy: userId } }  ,
+                            {new:true}  
+                        )
+                    }
+                    else{
+                        return msg
+                    }
+                
+            })) 
+
                 messages = await messageModel.populate(messages, {path: "sender", select: "nickname avatarImage"})
                 messages = messages.map((msg)=> {
                     return {
                         fromSelf: msg.sender._id.toString() === userId,
                         message: msg.message,
-                        details: msg.sender
+                        details: msg.sender,
+                        readBy: msg.readBy
                     }
                 })
+
                 res.status(200).json(messages)
                 
             }
@@ -129,6 +146,25 @@ module.exports.getGroups = async (req,res)=> {
 
                     return await messageModel.aggregate([
                        {$match: {groupId: ObjectId(group._id)}},
+                       {
+                        $addFields: {
+                            "name": `${group._id}`,
+                            "messages": "$message",
+                            "totalUnread": "$isRead"
+                        }
+                    },
+                    {
+                        "$project": {
+                            
+                            message:1,
+                            name:1,
+                            groupId: 1,
+                            messages: 1,
+                           readBy: 1,
+                           totalUnread: {$cond: [{$in: [ userId, '$readBy']}, 0, 1]}
+    
+                        }
+                    },
                        {$sort: {
                            "timeStamp": -1
                        }},
@@ -148,7 +184,13 @@ module.exports.getGroups = async (req,res)=> {
                                },
                                "groupId": {
                                    "$first": "$groupId"
-                               }
+                               },
+                               "totalUnread": {
+                            
+                                "$sum": '$totalUnread'
+                                
+                          }
+                        
                            }
                        }
                    ])
@@ -175,7 +217,7 @@ module.exports.getGroups = async (req,res)=> {
 
         }))
     
-        return res.status(200).json(projectedGroupMsgs)
+        return res.status(200).json(projectedGroupMsgs.flat(1))
        
     }
 

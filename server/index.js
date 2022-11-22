@@ -46,21 +46,37 @@ const io = socket(server, {
  }) 
  
 global.onlineUsers = new Map()
+let activeUsers = []
  io.on("connection", (socket)=> {
     global.chatSocket = socket
+
     socket.on("newUser", (userId)=> {
         onlineUsers.set(userId, socket.id)
-        console.log(global.onlineUsers)
+        if (!activeUsers.some((user)=> user.userId ===userId)){
+            
+            activeUsers.push({userId: userId, socketId: socket.id})
+        }
+        
+        io.emit("userOnline", activeUsers)
+        
+        console.log(activeUsers)
       })
     
     socket.on("send-msg", (data)=> {
-        console.log(data.to)
+       
         const sendUserSocket = onlineUsers.get(data.to)
         console.log(global.onlineUsers)
         if (sendUserSocket) {
-            console.log("socket", sendUserSocket)
-            console.log(data.message)
+           console.log(data.message)
             socket.to(sendUserSocket).emit("msg-received", data)
+        }
+    }) 
+
+    socket.on("msg-read", (user)=> {
+        const sendUserSocket = onlineUsers.get(user)
+        if(sendUserSocket){
+            console.log(sendUserSocket)
+            socket.to(sendUserSocket).emit("msg-read")
         }
     })
         
@@ -90,7 +106,7 @@ global.onlineUsers = new Map()
         })
 
         socket.on("answerCall", (data)=> {
-            console.log(data.signal)
+           
             const sendUserSocket = onlineUsers.get(data.to)
  
             socket.to(sendUserSocket).emit("callAccepted", data.signal)
@@ -113,9 +129,9 @@ global.onlineUsers = new Map()
         socket.join(id)
         console.log(`A user joined ${id}`)
     })
-
+ 
     socket.on("send-groupMsg", (data)=> {
-        console.log(` ${data.data}`)
+      console.log(data)
         socket.broadcast.to(data.groupId).emit("message", data.data)
     })
 
@@ -123,13 +139,26 @@ global.onlineUsers = new Map()
 
     })
 
-     socket.on("disconnect", (userId)=> {
-        // onlineUsers = onlineUsers.filter((user)=> user.socketID !==socket.id )
-        // io.emit("newUserResponse", onlineUsers)
+     socket.on("disconnect", ()=> {
+
+        console.log("Disconnecting")
+      activeUsers = activeUsers.filter((user)=> user.socketId !== socket.id)
+      console.log(activeUsers)
+
+      io.emit("userOffline", activeUsers)
+      
         console.log(`A user disconnected`)
      })
+     socket.on("offline", ()=> {
+      
+        console.log(socket.id)
+        activeUsers = activeUsers.filter((user)=> user.socketId !== socket.id)
+      console.log("User logged out")
+      
+      io.emit("userOffline", activeUsers)
+     })
  
-    //  socket.on("send-msg", (data)=> {
+       //  socket.on("send-msg", (data)=> {
     //      const sendUserSocket = onlineUsers.get
     //      if (sendUserSocket) {
     //          socket.to(sendUserSocket).emit("msg-received", data.message)

@@ -8,7 +8,7 @@ import { BigHead } from '@bigheads/core'
 import {motion} from "framer-motion"
 import { useDispatch, useSelector } from 'react-redux'
      
-export default function MyProfile({setShowProfile}) {
+export default function MyProfile({setShowProfile, socket}) {
   const {user, isLoading, isSuccess} = useSelector((state)=> state.auth)
   let navigate = useNavigate()
   const dispatch = useDispatch()
@@ -26,7 +26,9 @@ const [userDetails, setUserDetails] = useState({
   const [disabledAbout, setDisabledAbout] = useState(true)
 
   const handleLogout = ()=> {
+    socket.current?.emit("offline")
     dispatch(logout())
+
     navigate("/sign-in")
 
   }

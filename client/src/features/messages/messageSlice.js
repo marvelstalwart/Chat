@@ -105,7 +105,9 @@ reducers: {
         addMessage: (state, action)=> {
             state.chat = action.payload
         },
-
+        updateChats: (state,action)=>{
+            state.chats= action.payload 
+        },
         addGroupMessage: (state, action)=> {
             state.groupChats =action.payload
         },
@@ -199,5 +201,5 @@ extraReducers: (builder)=> {
 
     
 })
-export const {reset, setId, addMessage, searchMessage, addGroupMessage} = messageSlice.actions;
+export const {reset, setId, addMessage, searchMessage, addGroupMessage, updateChats} = messageSlice.actions;
 export default messageSlice.reducer;

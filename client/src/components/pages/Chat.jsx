@@ -1,19 +1,21 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Picker from "emoji-picker-react"
-import { faArrowLeft, faPaperPlane, faFaceSmile, faPhone, faVideo} from '@fortawesome/free-solid-svg-icons'
+
+import {faCheckDouble, faArrowLeft, faPaperPlane, faFaceSmile, faPhone, faVideo} from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'react-redux'
 import { BigHead } from '@bigheads/core'
 import Peer from 'simple-peer'
 import { newMessage } from '../../features/messages/messageSlice'
 import { useDispatch } from 'react-redux'
+import {motion} from "framer-motion"
 import { getChat } from '../../features/messages/messageSlice'
 import { Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { resetChat } from '../../features/users/usersSlice'
 import { reset, setId, addMessage } from '../../features/messages/messageSlice'
-import CallScreen from './videoCall/CallScreen'
-
+import videoCallIcon from "../../assets/img/vc.png"
+import doubleCheck from "../../assets/img/double-check.png"
 import {setCalling, endCall, incomingCall,  setStream, acceptCall} from '../../features/socket/socketSlice'
 import { callUser } from './videoCall/socket'
 import MyVideo1 from './videoCall/MyVideo1'
@@ -21,16 +23,57 @@ import MyVideo2 from './videoCall/MyVideo2'
 import UserVideo from './videoCall/UserVideo'
 import CallNotification from './videoCall/CallNotification'
 export default function Chat({ userVideo, connectionRef, selectedUser, socket, myVideo}) {
-
+    
     let navigate = useNavigate()
     let dispatch = useDispatch();
     
     const lastMessageRef = useRef(null)
-  
-  
+    const loadingContainer = {
+        width: "2rem",
+        height: "2rem",
+        display: "flex",
+        justifyContent: "space-around"
+      };
+      
+      const loadingCircle = {
+        display: "block",
+        width: "0.5rem",
+        height: "0.5rem",
+        backgroundColor: "black",
+        borderRadius: "0.25rem"
+      };
+      
+      const loadingContainerVariants = {
+        start: {
+          transition: {
+            staggerChildren: 0.2
+          }
+        },
+        end: {
+          transition: {
+            staggerChildren: 0.2
+          }
+        }
+      };
+      
+      const loadingCircleVariants = {
+        start: {
+          y: "50%"
+        },
+        end: {
+          y: "150%"
+        }
+      };
+      
+      const loadingCircleTransition = {
+        duration: 0.5,
+        yoyo: Infinity,
+        ease: "easeInOut"
+      };
     const [emojiPicker, setEmojiPicker] = useState(false)
     const [typing, setTyping] = useState(false)
     const {user} = useSelector((state)=> state.auth)
+    const {onlineUsers} = useSelector(state=> state.users)
     let {messages, chat, chats} = useSelector((state)=> state.messages)
    
     const [message, setMessage] = useState("")
@@ -38,47 +81,101 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
     //Call states
     
     const handleEmoji = ()=> {
-        setEmojiPicker(!emojiPicker)
-    } 
+        setEmojiPicker(!emojiPicker) 
+    }     
+    //Get messages when the user opens the page and also update the read state
+    useEffect(()=> {
+        
+       if (selectedUser) {
+           
+           console.log("1-1 chat mounted")
+           
+           socket.current?.emit("msg-read", selectedUser._id)
+           
+           dispatch(getChat({from:user._id, to: selectedUser._id}))
 
-
+        //    if (chat){
+               
+        //        chat =[...chat]
+        //        const isReadMsgs = chat.map((msg)=> {
+        //             if (msg.fromSelf === false) {
+        //                 msg.isRead = true
+                
+        //             }
+        //             return msg
+    
+        //         })
+        //         dispatch(addMessage(isReadMsgs))
+        //    }
+           
+    
+        }
+        },[messages, selectedUser])
+    
+    //Let the other user know if typing
     useEffect(()=> {
         if (selectedUser) {
 
             if (message && message.length) {
                 
-            socket.current?.emit("typing", selectedUser._id)
-    
+                socket.current?.emit("typing", selectedUser._id)    
+                
+            }    
+            else {
+                socket.current?.emit("stop-typing", selectedUser._id)
+            }    
         }
-        else {
-            socket.current?.emit("stop-typing", selectedUser._id)
-        }
-        }
-    },[message])
+    },[message])    
+
+
     useEffect(()=> {
-       
-          
+        
+        
         //position to buttom of the page  
         lastMessageRef.current?.scrollIntoView()
-      
-        //Emit the message received socket
+        
+        
+        //Socket logic
         if (socket.current){
+            //Update the sender if the message has been read
+            socket.current?.on("msg-read",()=> { 
+                console.log("Message has been read")
+                chat =[...chat]
+               const isReadMsgs = chat.map((msg)=> {
+                console.log("Updating")
+                    if (msg.fromSelf && !msg.isRead ) {
+                       return {...msg, isRead: true}
+                
+                    }
+                    return msg
+
+                })
+
+               
+                console.log("updated")
+                console.log(isReadMsgs)
+
+                dispatch(addMessage(isReadMsgs)) 
+            })
+            //Let the user know if the other party is typing
             socket.current.on("typing", ()=> {
                 setTyping(true)
 
                 
-            })
-            
+            })    
+            //Let the user know if the other party stops typing
             socket.current.on("stop-typing", ()=> {
                 setTyping(false)
                 
-            })
+            })    
+            //Receives a new message in real-time and update the states
             socket.current?.on("msg-received", (data)=> {
-           console.log(chat)
+                console.log("incoming message")
+           console.log(chat)     
            chat = [...chat];
 
-           chat.push({fromSelf:false, message: data.message})
-           
+           chat.push({fromSelf:false, message: data.message, isRead: true})
+           socket.current?.emit("msg-read", selectedUser._id)
            dispatch(addMessage(chat)) 
                
             } )
@@ -88,57 +185,47 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
             socket.current?.on("callUser", (data)=> {
                 console.log("Incoming call")
                 navigator.mediaDevices.getUserMedia({video:true, audio: true}).then((stream)=>{
-         
+          
         
                     dispatch(setStream(stream))
                      
                         myVideo.current.srcObject = stream
                         console.log("initial stream" + stream)
                         console.log(myVideo)
-                    })
+                    })     
 
-                    
+                     
                 const payload = { caller: data.from,
                     name: data.name, callerPhoto: data.avatar,
                     callerSignal: data.signal }
                     
                     
-                  dispatch(incomingCall (payload))
+                  dispatch(incomingCall (payload))  
 
                   socket.current?.on("callAccepted", ()=> {
                         
-                    dispatch(acceptCall())
+                    dispatch(acceptCall())  
                    
-                })
+                })    
 
                 socket.current?.on("endCall", ()=> {
-                   console.log("ending call")     
+                   console.log("ending call")      
                     dispatch(endCall())
                    
-                })
+                })    
                 
                 
                 
                 })
 
+                
                
-               
-        }
+        }        
        
  
-    },[chat])
+    },[chat])    
     
     
-
-    useEffect(()=> {
-        
-       if (selectedUser) {
-           
-           console.log("1-1 chat mounted")
-            dispatch(getChat({from:user._id, to: selectedUser._id}))
-    
-       }
-        },[messages, selectedUser])
 
 
     const addEmoji = ( emoji)=> {
@@ -158,19 +245,23 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
         e.preventDefault()
         if (message.length> 0){
             
-                 dispatch(newMessage({from:user._id, to: selectedUser._id, message: message}))
-
+                 //Send message to the server
+                 dispatch(newMessage({from:user._id, to: selectedUser._id, message: message, isRead: false}))
+                //Send message to the socket
                 socket.current.emit("send-msg", {
                     to: selectedUser._id,
                     from: user._id,
-                    message: message 
+                   message: message,
+                   isRead: false
+                    
                   
                 })
 
                 chat = [...chat];
-                chat.push({fromSelf:true, message: message})
+                chat.push({fromSelf:true, message: message, isRead: false})
+                //Add the new message to the state
                 dispatch(addMessage(chat)) 
-               console.log(chat)
+               
                 setMessage("");
         }
         else {
@@ -208,6 +299,12 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
         connectionRef.current.destroy()
      
     }
+    const online = (id)=> {
+          
+        const userOnline = onlineUsers.find((user)=> user.userId === id)
+       
+        return userOnline? true : false
+      }
 
 
 
@@ -230,21 +327,22 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 <div className='flex items-center gap-2'>
                 <div className='lg:hidden' onClick={()=> dispatch(resetChat())}><FontAwesomeIcon icon={faArrowLeft}/></div>
                 <div onClick={()=> navigate(`user/${selectedUser.nickname.toLowerCase()}`,{state:{selectedUser}})} className='flex items-center gap-2 font-medium w-full cursor-pointer'>
-               
+                <div className='flex relative justify-end'>
                 <BigHead className='w-[2rem]' {...selectedUser.avatarImage}/>
+                <div className={ `absolute w-4 h-4 rounded-full ${online(selectedUser._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+                           
+                            </div>
                 <div>
                 <div className=''>{selectedUser && selectedUser.nickname}</div>
-                {typing?<div className='text-xs font-light'>is typing...</div>:null}
-
+                
                 </div>
                 </div>
                 </div>
 
 
                 <div className='flex gap-4 text-gray-500 cursor-pointer'>
-                <FontAwesomeIcon onClick={ ()=> makeCall(user, selectedUser, socket, connectionRef, userVideo, myVideo, stream, dispatch) } icon={faPhone}/>
-
-                <FontAwesomeIcon icon={faVideo}/>
+            
+                <img onClick={ ()=> makeCall(user, selectedUser, socket, connectionRef, userVideo, myVideo, stream, dispatch) } src={videoCallIcon}/>
 
                 </div>
 
@@ -253,15 +351,50 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 {chat && chat.map((chat, index)=> {
                     
                     
-                    return <div key={index} className={`p-1 flex ${chat.fromSelf && `justify-end`} font-light`}>
+                    return <div key={index} className={`p-1 flex flex-col ${chat.fromSelf && `items-end`} font-light`}>
                     <div className={`${chat.fromSelf ? '  bg-sky-400  text-white rounded-tl-xl max-w-xs' : 'bg-gray-100 rounded-tr-xl max-w-xs'} w-fit h-fit bg-white p-3 rounded-b-xl md:p-6`}>
                         {chat.message}
+                      
                     </div>
+                   { chat.fromSelf  && chat.isRead &&
+                 <div className=''><img src={doubleCheck}/></div>
+                   }
+                   
                     <div ref={lastMessageRef}/>
+                    
                 </div> })}
+                {/* Typing structure */}
+               
+               {typing? <div className='px-2'>
+
+                            <motion.div
+                            style={loadingContainer}
+                            variants={loadingContainerVariants}
+                            initial="start"
+                            animate="end"
+
+
+                            >
+                            <motion.span
+                                
+                                style={loadingCircle}
+                                variants={loadingCircleVariants}
+                                transition={loadingCircleTransition}
+                            />
+                            <motion.span
+                                style={loadingCircle}
+                                variants={loadingCircleVariants}
+                                transition={loadingCircleTransition}
+                            />
+                            <motion.span
+                                style={loadingCircle}
+                                variants={loadingCircleVariants}
+                                transition={loadingCircleTransition}
+                            />
+                            </motion.div>
+                            </div>
+               :null}
                 
-
-
 
                 </div>
                 <div className='bg-white w-full  px-5 pb-2 rounded-xl py-4'>

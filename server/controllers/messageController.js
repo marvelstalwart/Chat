@@ -36,7 +36,8 @@ module.exports.addMessage = async (req, res)=> {
                  {$match: {users: currentUserId}},
                         {
                             $addFields: {
-                                "messages": "$message"
+                                "messages": "$message",
+                                "totalUnread": "$isRead"
                             }
                         },
                  //Select the fields we want to retain
@@ -47,8 +48,9 @@ module.exports.addMessage = async (req, res)=> {
                          message:1,
                          createdAt: 1,
                          users: 1,
-                         messages: 1
-                      
+                         messages: 1,
+                        isRead: 1,
+                        totalUnread: {$cond: [{$eq: ['$isRead', false]}, 1, 0]}
  
                      }
                  },
@@ -75,9 +77,19 @@ module.exports.addMessage = async (req, res)=> {
                          "message": {
                              "$first" : "$message"
                          },
-                         "messages": {
-                            "$push" : "$message"
+                         "isRead": {
+                            "$first": "$isRead"
+                         },
+                         "messages":  { 
+                            "$push": "$message"
                         },
+                        "totalUnread": {
+                            
+                          "$first": '$totalUnread'
+                          
+                    }
+                
+                 ,
                          "timeStamp": {
                              "$first" : "$createdAt"
                          }
@@ -102,9 +114,15 @@ module.exports.addMessage = async (req, res)=> {
                          "message": {
                              "$first": "$message"
                          },
-                         "messages": {
-                            "$push" : "$message"
-                        }
+                         "messages":  { 
+                               "$push": "$message"
+                            },
+                            "totalUnread": {
+                            
+                                "$sum": '$totalUnread'
+                                
+                          }
+                        
                          ,
                          "timeStamp": {
                              "$first": "$timeStamp"
@@ -123,7 +141,7 @@ module.exports.addMessage = async (req, res)=> {
     }
 
 module.exports.getMessages= async (req, res)=> {
-    const {from, to} = req.body
+    const {from, to, userId} = req.body
     
     if (from && to) { 
         const chatMessages= await messageModel.find({
@@ -131,16 +149,34 @@ module.exports.getMessages= async (req, res)=> {
                 $all: [from, to]
             }
         }).sort({updatedAt:1})
+        console.log(from,to)
+        //Update read status
         if (chatMessages){
-            const projectedMsgs = chatMessages.map((msg)=> {
-              return {
-                fromSelf: msg.sender.toString() === from,
-                message:msg.message
-              }  
-            })
-            res.status(200).json(projectedMsgs)
+
+            const updatedMessages =await Promise.all( chatMessages.map( async(msg)=>{
+                if (msg.sender.toString() !== from && msg.isRead === false) {
+                        
+                    return await messageModel.findByIdAndUpdate(
+                        { _id: msg._id },
+                        {isRead: true},    
+                        {new:true}  
+                    )
+                }
+                else{
+                    return msg
+                }
+            
+        })) 
+   
+        const projectedMsgs = updatedMessages.map((msg)=> {
+          return {
+            fromSelf: msg.sender.toString() === from,
+            message:msg.message,
+            isRead:msg.isRead
+          }  })
+        res.status(200).json(projectedMsgs)
         }
-       
+        
         else {
             return res.status(200).json("No chats yet!")
         }

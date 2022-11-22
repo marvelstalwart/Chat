@@ -1,6 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import linkedIn from "../../assets/img/linkedIn.png"
+import github from "../../assets/img/github.png"
+import twitter from "../../assets/img/twitter.png"
 import { faVideo, faUserGroup  } from '@fortawesome/free-solid-svg-icons'
 import { motion, AnimatePresence } from 'framer-motion'
 export default function LandingPage() {
@@ -30,7 +33,7 @@ const [expanded, setExpanded]  =useState(false)
            >
             { expanded&&
 
-            <motion.div initial={{right:-200}} animate={{right: 0}} className='absolute  right-0 top-0 bg-[#F5F6FA]  w-40 h-full'>
+            <motion.div initial={{right:-200}} animate={{right: 0}} className='absolute right-0 top-0 bg-[#F5F6FA]  w-40 h-full'>
             <motion.div  onClick={()=>setExpanded(false)} className='p-2 relative'>
             <motion.div initial={{rotate: 0 }} animate={{rotate: 45, translateY:2}} className='absolute border-b-2 w-6 h-2 border-black'></motion.div>
             <motion.div initial={{opacity: 1}} animate={{opacity:0}} className='border-b-2 w-6 h-2 border-black'></motion.div>
@@ -108,15 +111,13 @@ const [expanded, setExpanded]  =useState(false)
                         <div className='text-gray-600 text-center'>Choose random from Avatars or customize your Avatar to the detail</div>
 
                         </div>
-                        <div className='flex flex-col items-center'>
+                        <div className='flex flex-col gap-3 items-center'>
                         <h2 className='bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))]
                          from-sky-400 to-blue bg-clip-text  text-transparent text
                           font-lily font-bold text-6xl p-2 '>Yarn</h2>
-                          
+                          <div className='flex gap-2'><img className='w-[2rem] h-[2rem]' src={github}/><img className='w-[2rem] h-[2rem]' src={linkedIn}/><img className='w-[2rem] h-[2rem]' src={twitter}/> </div>
                           <div>
-                          <FontAwesomeIcon icon="fa-brands fa-twitter" />
-                          <FontAwesomeIcon icon="fa-brands fa-github" />
-
+                          
                           </div>
 
                         </div>

@@ -1,7 +1,7 @@
 import {React, useState} from 'react'
 import { useEffect, useRef } from 'react';
 import { useSelector,useDispatch } from 'react-redux'
-import { getUsers } from '../../features/users/usersSlice';
+import { getUsers, updateOnlineUsers } from '../../features/users/usersSlice';
 import swal from 'sweetalert2';
 import MyProfile from './profile/MyProfile';
 import Peer from "simple-peer"
@@ -22,7 +22,7 @@ import { setAvatarProps } from '../../features/avatar/avatarSlice';
 import { getRandomOptions } from '../../utils/bighead';
 import { acceptCall,endCall, setStream, callAccepted, callEnded } from '../../features/socket/socketSlice';
 import { logout, reset } from '../../features/auth/authSlice';
-import { getChats, searchMessage } from '../../features/messages/messageSlice';
+import { getChats, searchMessage, updateChats } from '../../features/messages/messageSlice';
 import { incomingCall } from '../../features/socket/socketSlice';
 import CallNotification from './videoCall/CallNotification';
 import UserVideo from './videoCall/UserVideo';
@@ -36,9 +36,9 @@ export default function Home() {
   const avatar = useSelector(state=> state.avatar)
   const {user} = useSelector(state=> state.auth)
   const{selectedGroup} =useSelector(state=> state.groups)
-  const { users, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
+  let { onlineUsers, selectedUser, isError, isLoading, isSuccess, message} = useSelector(state=> state.users)
   const [showProfile, setShowProfile] = useState(false)
-  const {messages, chats} = useSelector((state)=> state.messages)
+  let {groupChats, chats} = useSelector((state)=> state.messages)
   const [searchValue, setSearchValue] = useState()
   //Users, Groups, and Messages Interface conditional rendering
  const [showUsers, setShowUsers] = useState(false)
@@ -63,6 +63,7 @@ export default function Home() {
        
        
       }
+
       else  {
         
       }
@@ -101,6 +102,54 @@ export default function Home() {
     window.addEventListener("resize", handleResize)
   },[mobile])
 
+  useEffect(()=>{
+
+    if (socket.current){
+      socket.current.on("userOnline", (activeUsers)=> {
+           
+             dispatch(updateOnlineUsers(activeUsers))
+             
+           console.log(activeUsers)
+        console.log(onlineUsers)
+      })
+      socket.current.on("userOffline", (activeUsers)=> {
+        console.log("disconnecting")
+        
+       dispatch(updateOnlineUsers(activeUsers))
+        console.log(onlineUsers)
+      }) 
+      
+      socket.current.on("msg-received", (data)=> {
+      
+        
+        chats = [...chats]
+        
+        //Update the home screen with new messages 
+        console.log(chats)
+        const newChats = chats.map((chat)=> {
+          console.log(chat.totalUnread)
+          if (chat.sender._id === data.from || chat.to._id === data.from ) {
+            
+            return {...chat, message: data.message, totalUnread: chat.totalUnread+1}
+            
+          } 
+          return chat  
+        })   
+       
+        dispatch(updateChats(newChats))
+       
+            
+         
+        
+        }) 
+      
+     
+      }
+
+   return (()=> {
+    socket.current?.off("msg-received")
+   })
+   },[socket, socket.current])
 
   useEffect(()=> {
 
@@ -202,7 +251,7 @@ const leaveCall = ()=> {
                 
                
               </div>
-              {showProfile && <MyProfile user={user} setShowProfile={setShowProfile}/>}
+              {showProfile && <MyProfile user={user} setShowProfile={setShowProfile} socket={socket}/>}
               
              </section>
              <section title='search-bar' className='px-2 relative flex items-center'>
@@ -226,8 +275,8 @@ const leaveCall = ()=> {
               <div className='bg-white h-full rounded-lg '>
 
               {showMessages && <Chats changeChat={changeChat} mobile={mobile} setShowUsers={setShowUsers} setShowGroups={setShowGroups} setShowMessages={setShowMessages} searchValue={searchValue} socket={socket}/>}
-              {showUsers && <Users setShowUsers={setShowUsers}  searchValue={searchValue}/>}
-              {showGroups && <Groups searchValue={searchValue}/>}      
+              {showUsers && <Users setShowUsers={setShowUsers}  searchValue={searchValue} setShowGroups={setShowGroups} setShowMessages={setShowMessages} />}
+              {showGroups && <Groups searchValue={searchValue} socket={socket}/>}      
                
               </div>
              

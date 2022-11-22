@@ -5,6 +5,7 @@ import {motion} from "framer-motion"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faComments } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
+
 import { getChats } from '../../../features/messages/messageSlice'
 import { resetGroup } from '../../../features/groups/groupSlice'
 
@@ -12,29 +13,12 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
 
     let dispatch = useDispatch()
     const {user} = useSelector((state)=> state.auth)
-    const {chats, isLoading} = useSelector((state)=> state.messages)
+    const {onlineUsers} = useSelector(state=> state.users)
+    let {chats, isLoading} = useSelector((state)=> state.messages)
     const {selectedGroup}  = useSelector(state=> state.groups)
      const [searchedMessage, setSearchedMessage] = useState() 
    
 
-     useEffect(()=>{
-      if (socket.current){
-
-        socket.current.on("msg-received", (data)=> {
-          console.log("incoming message")
-          console.lof(data)
-          const chatIndex = chats.findIndex(chat=> chat.sender._id === data.from)
-          if (chatIndex > -1){
-
-           console.log(chats(chatIndex))
-          
-          }
-            
-        })
-      }
-
-
-     },[])
 
     useEffect(()=>{
      console.log(chats)
@@ -42,6 +26,7 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
             setSearchedMessage(chats.filter(chat=> chat.messages.find(message=> {
               return message.toLowerCase().includes(searchValue.toLowerCase())
             })))
+           
            
           }
         
@@ -53,30 +38,53 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
    
     useEffect(()=>{
          
-
+ 
             dispatch(getChats())
-            
+          // if (chats && chats.length) {
+          //   let unreadCount = 0
+          //   chats.map((chat)=> {
+          //     chat.messages.map((msg)=> {
+          //if (msg.isRead === false) {
+          //         unreadCount += 1
+          //       }
+          //     })
+          //   })
+          //   console.log(unreadCount)
+          // }    
         
         },[])
-        const handleClick =(user)=> {
+
+       
+
+        const handleClick =(selectedUser)=> {
+          //Hide Group View
           dispatch(resetGroup())
           
-            dispatch(changeChat(user))
+          
+          
+            dispatch(changeChat(selectedUser))
         }
 
         const displayUsers = ()=> {
           setShowUsers(true)
           setShowGroups(false)
           setShowMessages(false)
+        } 
+
+        const online = (id)=> {
+          
+          const userOnline = onlineUsers.find((user)=> user.userId === id)
+         
+          return userOnline? true : false
         }
 
     return (
-    <div className='h-full w-full'>     
+    <div className='h-full w-full '>     
      
     {
       !isLoading && chats && chats.length> 0? 
-      <motion.div initial={{x: -200}} animate={{x: 0}} className='flex w-full '>
-        <div className='w-80'>
+      <motion.div initial={{x: -200}} animate={{x: 0}} className='flex w-full  '>
+        <div className='w-full '>
 
       
          {searchValue ? searchedMessage && searchedMessage.length> 0 ? searchedMessage.map((chat)=> {
@@ -84,10 +92,18 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
                   return  <div onClick={()=>handleClick(chat.to._id === user._id? chat.sender : chat.to)} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
                   <div className='w-[3rem]'>
                     {chat.to._id ===user._id? 
-                    <BigHead {...chat.sender.avatarImage}/>
+                    <div>
+                      <BigHead {...chat.sender.avatarImage}/>
+                      
+                    </div>
                     :
-                    <BigHead {...chat.to.avatarImage}/> 
+                    <div>
+                      
+                      <BigHead {...chat.to.avatarImage}/> 
+                      
+                    </div>
                   }
+                  
                     
                     </div>
                   <div className='w-full'>
@@ -115,22 +131,36 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
          
          : chats.map((chat)=> {
         
-          return  <div onClick={()=>handleClick(chat.to._id === user._id? chat.sender : chat.to)} className='m-3 flex gap-2 items-center cursor-pointer' key={chat._id}>
+          return  <div onClick={()=>handleClick(chat.to._id === user._id? chat.sender : chat.to)} className='p-3 flex gap-2 items-center w-full cursor-pointer' key={chat._id}>
           <div className='w-[3rem]'>
             {chat.to._id ===user._id? 
-            <BigHead {...chat.sender.avatarImage}/>
+           <div className='flex relative justify-end'>
+               
+              <BigHead {...chat.sender.avatarImage}/>
+              <div className={ `absolute w-4 h-4 rounded-full ${online(chat.to._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+            </div>
             :
-            <BigHead {...chat.to.avatarImage}/> 
+            <div className='flex relative justify-end'>
+              <BigHead {...chat.to.avatarImage}/> 
+             <div className={ `absolute w-4 h-4 rounded-full ${online(chat.to._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+            </div>
           }
             
             </div> 
           <div className='w-full'>
            <div>{chat.to._id=== user._id? chat.sender.nickname : chat.to.nickname}</div>
          
-          <div className='text-sm font-light'>{chat.message.slice(0,35)}</div>
+          <div className={` ${chat.totalUnread > 0  && chat.sender._id !== user._id ? 'font-bold text-sm' : 'font-light text-sm'}`}>{chat.message?.slice(0,35)}</div>
           <hr className='w-full'></hr>
           </div>
+          {chat.totalUnread> 0 && chat.sender._id !== user._id &&
+            <div className=' flex items-center  bg-blue text-white  rounded-full'>
+            <div class= " text-xs text-center w-4 h-4 ">
+            {chat.totalUnread}
+        </div>
+              </div>
           
+          }
           </div>
         
         

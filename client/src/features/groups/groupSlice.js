@@ -149,6 +149,9 @@ export const groupSlice = createSlice({
             resetGroup: (state)=> {
              state.selectedGroup = null   
             },
+            updateGroups: (state, action)=> {
+                state.groups= action.payload
+            },
             addChat: (state, action)=> {
                 state.chats = action.payload
                 console.log(action.payload)
@@ -280,5 +283,5 @@ export const groupSlice = createSlice({
         })
     }
 })
-export const {reset, changeGroup, resetGroup, addChat} = groupSlice.actions
+export const {reset, changeGroup, resetGroup, addChat, updateGroups} = groupSlice.actions
 export default groupSlice.reducer

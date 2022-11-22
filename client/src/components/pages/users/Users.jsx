@@ -5,16 +5,17 @@ import { BigHead } from '@bigheads/core'
 import { getUsers } from '../../../features/users/usersSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import {motion} from "framer-motion"
+import { resetGroup } from '../../../features/groups/groupSlice'
 export default function Users({setShowUsers, searchValue}) {
     const { user} = useSelector((state)=> state.auth)
-    const {users} = useSelector ((state)=> state.users)
+    const {users, onlineUsers} = useSelector ((state)=> state.users)
     let dispatch = useDispatch()
     console.log(users)
     const [filteredUsers, setFilteredUsers] = useState()
     useEffect(()=>{
      
       if (searchValue) {
-      let filter = users.filter((user)=> user.nickname.toLowerCase().includes(searchValue.toLowerCase()))
+      let filter = users?.filter((user)=> user.nickname.toLowerCase().includes(searchValue.toLowerCase()))
        setFilteredUsers(filter)
       }
     
@@ -30,13 +31,26 @@ export default function Users({setShowUsers, searchValue}) {
        
     },[user])
     
+    const handleClick =(user)=> {
+        
+    dispatch(resetGroup())
+      dispatch(changeChat(user))
+      
+    }
+    const online = (id)=> {
+          
+      const userOnline = onlineUsers.find((user)=> user.userId === id)
+     
+      return userOnline? true : false
+    }
 
+    console.log(users)
      return (  
             <motion.div initial={{x:-200}} animate={{x:0}}>
                     <section title='users' className=' h-15 w-full overflow-x-hidden '>
       {searchValue? filteredUsers && filteredUsers.length> 0 ?  filteredUsers.map((user, index)=> (
 
-          <div  className=" flex items-center p-3  gap-2 " key={index} onClick={()=>dispatch(changeChat(user))}>
+          <div  className=" flex items-center p-3  gap-2 " key={index} onClick={()=>handleClick(user)}>
               
           <BigHead className='w-[3rem]' {...user.avatarImage}/>
           {/* <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="user-photo"/> */}
@@ -64,10 +78,14 @@ export default function Users({setShowUsers, searchValue}) {
       
       
     users && users.map ((user, index)=> (
-      <div  className=" flex items-center p-3  gap-2 " key={index} onClick={()=>dispatch(changeChat(user))}>
-        
-        <BigHead className='w-[3rem]' {...user.avatarImage}/>
-        {/* <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="user-photo"/> */}
+      <div  className=" flex items-center p-3  gap-2 cursor-pointer " key={index} onClick={()=>handleClick(user)}>
+          <div className='flex relative justify-end'>
+            <div className={ `absolute w-4 h-4 rounded-full ${online(user._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+            
+            <BigHead className='w-[3rem]' {...user.avatarImage}/>
+            {/* <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="user-photo"/> */}
+
+          </div>
         <div>
         <h1 className='font-lg text-base '>{user.nickname}</h1>
         <p className='text-xs'>{user.about}</p>
