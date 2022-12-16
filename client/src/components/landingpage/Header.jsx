@@ -14,10 +14,7 @@ export default function Header() {
     <ul className=' hidden lg:block list-none overflow-hidden m-0 p-0'>
         <Link to="/welcome" className='float-left px-8'>Chat</Link>
         <Link to="/features" className='float-left px-8'>Features</Link>
-        <Link to="/login" className='float-left px-8'>Login</Link>
-       
-        <Link to="/register" className='float-left px-8'>Sign up</Link>
-       
+        
     </ul>
 
     <div onClick={()=>setExpanded(true)} className='lg:hidden'>
@@ -44,6 +41,9 @@ export default function Header() {
     <ul className='flex  flex-col list-none overflow-hidden m-0 p-0'>
         <Link to="/welcome" className='p-2 '>Chat</Link>
         <Link to="/features" className=' p-2'>Features</Link>
+        <Link to="/login" className='float-left p-2'>Login</Link>
+       
+       <Link to="/register" className='float-left p-2'>Sign up</Link>
       
     </ul>
     </motion.div>

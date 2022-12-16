@@ -40,7 +40,7 @@ const server =app.listen(PORT, ()=> console.log(`server running on port ${PORT}`
 
 const io = socket(server, {
     cors: {
-     origin: `http://localhost:3000`,
+     origin: `https://yarnchat.netlify.app`,
      credentials:true
     }        
  }) 
