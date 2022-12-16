@@ -15,7 +15,7 @@ const initialState = {
 }
 
 
-export const socket = socketIO.connect('http://localhost:5000')
+export const socket = socketIO.connect('https://yarn-6st0.onrender.com')
 
 export const getUsers = createAsyncThunk("users/get", async(payload, thunkAPI)=> {
     try {

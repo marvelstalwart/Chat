@@ -1,9 +1,9 @@
  import axios from "axios"
-const addMessageURI = "http://localhost:5000/api/messages/new"
-const getChatURL = "http://localhost:5000/api/messages/chat"
-const getChatsURL = "http://localhost:5000/api/messages/getchats"
-const getGroupChatsURL = "http://localhost:5000/api/groups/messages/get"
-const sendGroupMsgURL = "http://localhost:5000/api/groups/messages/new"
+const addMessageURI = "https://yarn-6st0.onrender.com/api/messages/new"
+const getChatURL = "https://yarn-6st0.onrender.com/api/messages/chat"
+const getChatsURL = "https://yarn-6st0.onrender.com/api/messages/getchats"
+const getGroupChatsURL = "https://yarn-6st0.onrender.com/api/groups/messages/get"
+const sendGroupMsgURL = "https://yarn-6st0.onrender.com/api/groups/messages/new"
 const  newMessage = async (payload, token)=> {
 
    const config = {

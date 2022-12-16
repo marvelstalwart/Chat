@@ -1,10 +1,10 @@
 import axios from "axios"
 import { Buffer } from "buffer";
 
-const REGURL = "http://localhost:5000/api/users/register";
-const LOGINURL = "http://localhost:5000/api/users/login";
-const AVATARURL = "http://localhost:5000/api/users/setAvatar";
-const UPDATE_URL = "http://localhost:5000/api/users/update"
+const REGURL = "https://yarn-6st0.onrender.com/api/users/register";
+const LOGINURL = "https://yarn-6st0.onrender.com/api/users/login";
+const AVATARURL = "https://yarn-6st0.onrender.com/api/users/setAvatar";
+const UPDATE_URL = "https://yarn-6st0.onrender.com/api/users/update"
 
 const register = async (payload)=> {
     const response = await axios.post(REGURL, payload)

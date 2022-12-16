@@ -23,7 +23,7 @@ app.use("/api/messages", messageRoute)
 app.use("/api/groups", groupsRoute)
   
 
-    mongoose.connect(CONN, {useNewUrlParser:true, useUnifiedTopology: true} )
+    mongoose.connect(`${CONN}`, {useNewUrlParser:true, useUnifiedTopology: true} )
     .then(()=> {
         console.log("connected")
     })

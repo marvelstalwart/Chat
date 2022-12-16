@@ -1,13 +1,13 @@
 import axios from "axios"
-const getGroupsURL = "http://localhost:5000/api/groups/get"
-const createGroupURL = "http://localhost:5000/api/groups/create"
-const getGroupMsgsURL = "http://localhost:5000/api/groups/messages/get"
-const getMembersURL ="http://localhost:5000/api/groups/members/get"
-const setAdminURL = "http://localhost:5000/api/groups/admins/add"
-const removeAdminURL = "http://localhost:5000/api/groups/admins/remove"
-const leaveGroupURL = "http://localhost:5000/api/groups/leave"
-const removeMemberURL = "http://localhost:5000/api/groups/members/remove"
-const addMembersURL = "http://localhost:5000/api/groups/members/add"
+const getGroupsURL = "https://yarn-6st0.onrender.com/api/groups/get"
+const createGroupURL = "https://yarn-6st0.onrender.com/api/groups/create"
+const getGroupMsgsURL = "https://yarn-6st0.onrender.com/api/groups/messages/get"
+const getMembersURL ="https://yarn-6st0.onrender.com/api/groups/members/get"
+const setAdminURL = "https://yarn-6st0.onrender.com/api/groups/admins/add"
+const removeAdminURL = "https://yarn-6st0.onrender.com/api/groups/admins/remove"
+const leaveGroupURL = "https://yarn-6st0.onrender.com/api/groups/leave"
+const removeMemberURL = "https://yarn-6st0.onrender.com/api/groups/members/remove"
+const addMembersURL = "https://yarn-6st0.onrender.com/api/groups/members/add"
 const getGroups = async (payload, token)=> {
     const config = {
         headers: {
