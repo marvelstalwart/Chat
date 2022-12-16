@@ -57,7 +57,7 @@ export default function Home() {
   useEffect(()=> {
    
       if (user) {
-        socket.current = io("http://localhost:5000")
+        socket.current = io("https://yarn-6st0.onrender.com")
           socket.current.emit("newUser", user._id)
          
        

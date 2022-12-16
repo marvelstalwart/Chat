@@ -35,7 +35,7 @@ export default function GroupChat() {
        
         if(selectedGroup) {
             
-            socket.current = io("http://localhost:5000")
+            socket.current = io("https://yarn-6st0.onrender.com")
             socket.current?.emit("join-chat", selectedGroup._id)
             
            
