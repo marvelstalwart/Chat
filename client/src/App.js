@@ -17,9 +17,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 function App() {
   const {user} = useSelector((state=> state.auth))
   return (
-        <body className="w-screen h-screen">
+        <body className="w-screen h-screen overflow-y-hidden">
           <Router>
               <div className='w-full h-full'>
+
                 <Routes>
                 <Route path='/' exact element={<Protected user={user}><Home/></Protected>}/>
                   <Route path='/register' element={<Signup/>}/>
