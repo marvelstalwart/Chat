@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
 import Header from './Header'
-import avatar from "../../assets/img/avatar.png"
-import group from "../../assets/img/Group.png"
-import chat2 from "../../assets/img/chat2.png"
+import avatar from "../../assets/img/avatar.webp"
+import group from "../../assets/img/Group.webp"
+import chat2 from "../../assets/img/chat2.webp"
 import {  useAnimation } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {useInView} from "react-intersection-observer"

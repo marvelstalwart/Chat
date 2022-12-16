@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 
-import graphics from "../../assets/img/graphics.png"
+import graphics from "../../assets/img/graphics.webp"
 import linkedIn from "../../assets/img/linkedIn.png"
 import github from "../../assets/img/github.png"
 import Header from './Header'
