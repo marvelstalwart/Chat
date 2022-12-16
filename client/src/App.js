@@ -17,25 +17,28 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 function App() {
   const {user} = useSelector((state=> state.auth))
   return (
-        <Router>
-            <div className="w-screen h-screen">
-              <Routes>
-              <Route path='/' exact element={<Protected user={user}><Home/></Protected>}/>
-                <Route path='/register' element={<Signup/>}/>
-                  <Route path='/setAvatar' element={<Protected user={user}><SetAvatar/></Protected>}/>
-                  <Route path='/welcome' element={<LandingPage/>}/>
-                <Route path='/login' element={<Signin/>}/>
-                <Route path='/my-profile' element={<Protected user={user}><MyProfile/></Protected>}/>
-                <Route path="/user/:id" element={<Protected user={user}><UserProfile/></Protected>}/>
-                <Route path="/video" element={<Protected user={user}><CallScreen/></Protected>}/>
-                  <Route path="/features" element={<Features/>}></Route>
-              </Routes>
-            
-            
-            </div>
+        <body className="w-screen h-screen">
+          <Router>
+              <div className='w-full h-full'>
+                <Routes>
+                <Route path='/' exact element={<Protected user={user}><Home/></Protected>}/>
+                  <Route path='/register' element={<Signup/>}/>
+                    <Route path='/setAvatar' element={<Protected user={user}><SetAvatar/></Protected>}/>
+                    <Route path='/welcome' element={<LandingPage/>}/>
+                  <Route path='/login' element={<Signin/>}/>
+                  <Route path='/my-profile' element={<Protected user={user}><MyProfile/></Protected>}/>
+                  <Route path="/user/:id" element={<Protected user={user}><UserProfile/></Protected>}/>
+                  <Route path="/video" element={<Protected user={user}><CallScreen/></Protected>}/>
+                    <Route path="/features" element={<Features/>}></Route>
+                </Routes>
+              
+              
+              </div>
+  
+          </Router>
+           
 
-        </Router>
-         
+        </body>
 
      
 
