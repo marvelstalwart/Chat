@@ -123,7 +123,7 @@ export default function GroupChat() {
 
 
   return (
-    <div className=" h-screen w-full lg:p-4">
+    <div className=" h-full w-full lg:p-4">
          <AnimatePresence
             initial={false}
             exitBeforeEnter={true}

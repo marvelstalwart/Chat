@@ -53,7 +53,7 @@ export default function SetAvatar() {
     }
 
   return ( 
-  <div className='w-screen h-screen flex flex-col gap-2 bg-blue-100 lg:items-center  '>
+  <div className='w-full h-full flex flex-col gap-2 bg-blue-100 lg:items-center  '>
 <div className="lg:w-96 ">
 
 

@@ -311,7 +311,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
     
 
   return (
-                    <div className=" h-screen w-full lg:p-4">
+                    <div className=" h-full w-full lg:p-4">
                             <div className='h-full w-full flex flex-col lg:rounded-xl  bg-white relative'>
                         {selectedUser&& <>
                             {calling && <MyVideo1 myVideo={myVideo} callAccepted={callAccepted} callEnded={callEnded} leaveCall={leaveCall} /> }

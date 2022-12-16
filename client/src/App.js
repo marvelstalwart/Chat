@@ -17,7 +17,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 function App() {
   const {user} = useSelector((state=> state.auth))
   return (
-        <body className="w-screen h-screen overflow-y-hidden">
+        <body className="">
           <Router>
               <div className='w-full h-full'>
 
