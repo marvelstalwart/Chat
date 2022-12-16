@@ -19,7 +19,7 @@ function App() {
   return (
         <body className="">
           <Router>
-              <div className='w-full h-full'>
+              <div className='w-full h-full overflow-y-hidden'>
 
                 <Routes>
                 <Route path='/' exact element={<Protected user={user}><Home/></Protected>}/>
