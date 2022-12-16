@@ -8,6 +8,7 @@ import Header from './Header'
 import twitter from "../../assets/img/twitter.png"
 import { faVideo, faUserGroup  } from '@fortawesome/free-solid-svg-icons'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 export default function LandingPage() {
 
   return (
@@ -24,7 +25,9 @@ export default function LandingPage() {
                 <div className=' px-4 h-full w-full flex flex-col justify-center text-gray gap-2'>
                     <p className='font-bold text-xl sm:text-xl md:text-4xl xl:text-6xl'> Start Chatting with your Friends, Anywhere, Anytime</p>
                     <p className='text-gray-700 w-[18rem] md:w-[22rem] lg:[w-26rem] xl:w-[48rem] text-xs sm:text-bold md:text-xl lg:text-2xl xl:text-3xl'>Connect with people all over the world and initiate lively interactions</p>
-                    <button className='bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-sky-400 to-blue p-4 rounded-lg text-white w-fit'>Start Chatting</button>
+                   <Link to="/login">
+                   <button className='bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-sky-400 to-blue p-4 rounded-lg text-white w-fit'>Start Chatting</button>
+                   </Link> 
                     </div>
                     
                       
