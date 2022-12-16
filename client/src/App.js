@@ -21,10 +21,10 @@ function App() {
             <div className="w-screen h-screen">
               <Routes>
               <Route path='/' exact element={<Protected user={user}><Home/></Protected>}/>
-                <Route path='/sign-up' element={<Signup/>}/>
+                <Route path='/register' element={<Signup/>}/>
                   <Route path='/setAvatar' element={<Protected user={user}><SetAvatar/></Protected>}/>
                   <Route path='/welcome' element={<LandingPage/>}/>
-                <Route path='/sign-in' element={<Signin/>}/>
+                <Route path='/login' element={<Signin/>}/>
                 <Route path='/my-profile' element={<Protected user={user}><MyProfile/></Protected>}/>
                 <Route path="/user/:id" element={<Protected user={user}><UserProfile/></Protected>}/>
                 <Route path="/video" element={<Protected user={user}><CallScreen/></Protected>}/>

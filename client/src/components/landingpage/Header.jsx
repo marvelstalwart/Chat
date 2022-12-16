@@ -14,6 +14,9 @@ export default function Header() {
     <ul className=' hidden lg:block list-none overflow-hidden m-0 p-0'>
         <Link to="/welcome" className='float-left px-8'>Chat</Link>
         <Link to="/features" className='float-left px-8'>Features</Link>
+        <Link to="/login" className='float-left px-8'>Login</Link>
+       
+        <Link to="/register" className='float-left px-8'>Sign up</Link>
        
     </ul>
 
@@ -49,10 +52,10 @@ export default function Header() {
     </AnimatePresence>
 
     <div className='hidden gap-2 lg:flex lg:items-center'>
-        <Link to="/sign-in">
+        <Link to="/login">
         <button >Login</button>
         </Link>
-        <Link to="/sign-up">
+        <Link to="/register">
         <button className='bg-blue p-4 rounded-lg text-white'>Get Started Free</button>
         </Link>
     </div>

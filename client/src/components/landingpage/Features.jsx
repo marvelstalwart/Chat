@@ -165,7 +165,7 @@ export default function Features() {
 
                             </div>
                             <div className='w-full py-2 flex justify-center'>
-                            <Link to="/sign-up">
+                            <Link to="/register">
                                 <button className='bg-blue p-4 rounded-lg text-white'>Get Started Free</button>
                                 </Link>
 

@@ -30,7 +30,7 @@ const [userDetails, setUserDetails] = useState({
     socket.current?.emit("offline")
     dispatch(logout())
 
-    navigate("/sign-in")
+    navigate("/login")
 
   }
 
