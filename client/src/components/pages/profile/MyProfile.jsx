@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
      
 export default function MyProfile({setShowProfile, socket}) {
   const {user, isLoading, isSuccess} = useSelector((state)=> state.auth)
+  const {onlineUsers} = useSelector(state=> state.users)
   let navigate = useNavigate()
   const dispatch = useDispatch()
   let location = useLocation()
@@ -72,7 +73,7 @@ const [userDetails, setUserDetails] = useState({
             </div>
             
             <div className=' flex flex-col gap-4  w-full md:items-center  pt-10 px-8'>
-            <div  className=' flex flex-col gap-3'>
+            <div  className=' flex flex-col gap-3 w-[80%]'>
 
            
             <div className=' flex flex-col gap-3'> 

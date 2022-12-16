@@ -80,7 +80,7 @@ export default function Users({setShowUsers, searchValue}) {
     users && users.map ((user, index)=> (
       <div  className=" flex items-center p-3  gap-2 cursor-pointer " key={index} onClick={()=>handleClick(user)}>
           <div className='flex relative justify-end'>
-            <div className={ `absolute w-4 h-4 rounded-full ${online(user._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+            <div className={ `absolute w-3 h-3 rounded-full ${online(user._id)? 'bg-blue' : 'bg-gray-200' } `}></div>
             
             <BigHead className='w-[3rem]' {...user.avatarImage}/>
             {/* <img className=' max-h-[2rem]  cursor-pointer hover:border-4 hover:border-sky-500/100 hover:rounded-full active:border-4 active:border-sky-500/100 active:rounded-full'  src={`data: image/svg+xml;base64,${user.avatarImage}`}  alt="user-photo"/> */}

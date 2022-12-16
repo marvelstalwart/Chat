@@ -226,6 +226,13 @@ const leaveCall = ()=> {
   connectionRef.current.destroy()
 
 }
+//Online state for currently logged in User
+const online = (id)=> {
+          
+  const userOnline = onlineUsers.find((user)=> user.userId === id)
+ 
+  return userOnline? true : false
+}
 
 
   return (
@@ -245,10 +252,11 @@ const leaveCall = ()=> {
               <div className={`${mobile && selectedUser || mobile && selectedGroup ? 'hidden' : mobile ? 'w-full flex flex-col': 'flex flex-col w-80 gap-1' }   `}>
               <section className='flex  justify-between items-center'>
               <h1 className='font-lily font-bold text-xl p-2'>Yarn</h1>
-              <div className=' max-w-[3rem] p-2 cursor-pointer' onClick={()=> setShowProfile(true)}>
+              <div className='flex relative justify-end max-w-[3rem] p-2 cursor-pointer' onClick={()=> setShowProfile(true)}>
               
                 <BigHead className='w-[2rem]' {...user.avatarImage }/>
-                
+                <div className={ `absolute w-3 h-3 rounded-full ${online(user._id)? 'bg-blue' : 'bg-gray-200' } `}></div>
+                  
                
               </div>
               {showProfile && <MyProfile user={user} setShowProfile={setShowProfile} socket={socket}/>}

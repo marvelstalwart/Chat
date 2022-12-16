@@ -137,12 +137,12 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
            <div className='flex relative justify-end'>
                
               <BigHead {...chat.sender.avatarImage}/>
-              <div className={ `absolute w-4 h-4 rounded-full ${online(chat.to._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+              <div className={ `absolute w-3 h-3 rounded-full ${online(chat.to._id)? 'bg-blue' : 'bg-gray-200' } `}></div>
             </div>
             :
             <div className='flex relative justify-end'>
               <BigHead {...chat.to.avatarImage}/> 
-             <div className={ `absolute w-4 h-4 rounded-full ${online(chat.to._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+             <div className={ `absolute w-3 h-3 rounded-full ${online(chat.to._id)? 'bg-blue' : 'bg-gray-200' } `}></div>
             </div>
           }
             
@@ -155,7 +155,7 @@ export default function Chats({ changeChat, socket, searchValue, setShowGroups, 
           </div>
           {chat.totalUnread> 0 && chat.sender._id !== user._id &&
             <div className=' flex items-center  bg-blue text-white  rounded-full'>
-            <div class= " text-xs text-center w-4 h-4 ">
+            <div class= " text-xs text-center w-3 h-3 ">
             {chat.totalUnread}
         </div>
               </div>

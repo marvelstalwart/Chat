@@ -98,7 +98,7 @@ module.exports.setAvatar = async (req, res)=> {
 module.exports.reg = async (req, res)=> {
  
     const {nickname, email, password} = req.body
-    const emailExists = await userModel.findOne({email});
+    const emailExists = await userModel.findOne({email: email.toLowerCase()});
     if (!nickname|| !email || !password ) {
        return res.status(400).json({message: "One of the fields are empty" })
     } else {
@@ -117,7 +117,7 @@ module.exports.reg = async (req, res)=> {
     
         const newUser = new userModel ({
                 nickname,
-                email,
+                email: email.toLowerCase(),
                 password: hashedPassword
         })
         newUser.save()
@@ -147,7 +147,7 @@ module.exports.reg = async (req, res)=> {
 module.exports.loginUser = async (req, res)=> {
     const {email, password} = req.body;
   
-        userModel.findOne({email})
+        userModel.findOne({email:email.toLowerCase()})
         .then((user)=> { bcrypt.compare(password, user.password)
             .then((pass)=> {
                     if (pass) {

@@ -135,7 +135,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
         lastMessageRef.current?.scrollIntoView()
         
         
-        //Socket logic
+        //Socket logic 
         if (socket.current){
             //Update the sender if the message has been read
             socket.current?.on("msg-read",()=> { 
@@ -329,7 +329,7 @@ export default function Chat({ userVideo, connectionRef, selectedUser, socket, m
                 <div onClick={()=> navigate(`user/${selectedUser.nickname.toLowerCase()}`,{state:{selectedUser}})} className='flex items-center gap-2 font-medium w-full cursor-pointer'>
                 <div className='flex relative justify-end'>
                 <BigHead className='w-[2rem]' {...selectedUser.avatarImage}/>
-                <div className={ `absolute w-4 h-4 rounded-full ${online(selectedUser._id)? 'bg-green-400' : 'bg-gray-200' } `}></div>
+                <div className={ `absolute w-3 h-3 rounded-full ${online(selectedUser._id)? 'bg-blue' : 'bg-gray-200' } `}></div>
                            
                             </div>
                 <div>

@@ -5,6 +5,7 @@ import Signin from './components/reg/Signin'
 import Home from './components/pages/Home';
 import MyProfile from './components/pages/profile/MyProfile';
 import Chat from './components/pages/Chat';
+import Features from './components/landingpage/Features';
 import SetAvatar from './components/reg/SetAvatar';
 import LandingPage from './components/landingpage/LandingPage';
 import CallScreen from './components/pages/videoCall/CallScreen';
@@ -25,7 +26,7 @@ function App() {
                 <Route path='/my-profile' element={<MyProfile/>}/>
                 <Route path="/user/:id" element={<UserProfile/>}/>
                 <Route path="/video" element={<CallScreen/>}/>
-             
+                  <Route path="/features" element={<Features/>}></Route>
               </Routes>
             
             

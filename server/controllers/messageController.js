@@ -148,7 +148,7 @@ module.exports.getMessages= async (req, res)=> {
             users: {
                 $all: [from, to]
             }
-        }).sort({updatedAt:1})
+        })
         console.log(from,to)
         //Update read status
         if (chatMessages){
