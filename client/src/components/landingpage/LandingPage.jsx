@@ -38,7 +38,7 @@ export default function LandingPage() {
                </motion.div>
                </div>
                 </section>
-                        <div className='flex flex-col gap-3 items-center'>
+                        <div className='flex flex-col gap-3  py-12 items-center'>
                        
                           <div className='flex gap-2'><img className='w-[2rem] h-[2rem]' src={github}/><img className='w-[2rem] h-[2rem]' src={linkedIn}/><img className='w-[2rem] h-[2rem]' src={twitter}/> </div>
                           <div>

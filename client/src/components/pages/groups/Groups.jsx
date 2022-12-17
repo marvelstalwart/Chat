@@ -149,7 +149,7 @@ export default function Groups({searchValue, socket}) {
     :
     <div className='w-full flex justify-center h-full items-center'><p>No groups yet</p></div>
     }
-      <div onClick={()=> setGroupModal(true)} className='absolute bottom-0 right-0 p-2 cursor-pointer'><FontAwesomeIcon className='text-blue' size='2xl' icon={ faCirclePlus}/></div>
+      <div onClick={()=> setGroupModal(true)} className='absolute bottom-0 right-0 p-2 py-10 cursor-pointer'><FontAwesomeIcon className='text-blue' size='2xl' icon={ faCirclePlus}/></div>
            <AnimatePresence
             initial={false}
             exitBeforeEnter={true}
