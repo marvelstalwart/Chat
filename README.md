@@ -1,12 +1,17 @@
 # Chat
-A simple web messaging with 1-1 and Group chat
+<h3>A simple web messaging with 1-1 and Group chat</h3>
 
-FEATURES
-Real Time Messaging
-Video Call
-1 to 1 and Group Chat
-Avatar Customization
-Online/Offline Status
-Add/Remove Group Members
-Add/Dismiss Admin
-Advanced search
+<h5>FEATURES</h5>
+<ul>
+  <li>Real Time Messaging</li>
+  <li>Video Call</li>
+  <li>1 to 1 and Group Chat</li>
+  <li>Avatar Customization</li>
+  <li>Online/Offline Status</li>
+  <li>Add/Remove Group Members</li>
+  <li>Add/Dismiss Admin</li>
+<li>Advanced search</li>
+
+</ul>
+
+
