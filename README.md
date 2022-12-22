@@ -1,5 +1,5 @@
 # Chat
-<h3>A simple web messaging with 1-1 and Group chat</h3>
+<h3>A simple web messaging with 1-1 and Group chat and Video callin, implemented with Simple Peer WEB RTC and Web socket</h3>
 
 <h5>FEATURES</h5>
 <ul>
