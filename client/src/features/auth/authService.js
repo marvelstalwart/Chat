@@ -1,10 +1,10 @@
 import axios from "axios"
 import { Buffer } from "buffer";
 
-const REGURL = "https://chat-crmw.onrender.com/api/users/register";
-const LOGINURL = "https://chat-crmw.onrender.com/api/users/login";
-const AVATARURL = "https://chat-crmw.onrender.com/api/users/setAvatar";
-const UPDATE_URL = "https://chat-crmw.onrender.com/api/users/update"
+const REGURL = "https://chat-278i.onrender.com/api/users/register";
+const LOGINURL = "https://chat-278i.onrender.com/api/users/login";
+const AVATARURL = "https://chat-278i.onrender.com/api/users/setAvatar";
+const UPDATE_URL = "https://chat-278i.onrender.com/api/users/update"
 
 const register = async (payload)=> {
     const response = await axios.post(REGURL, payload)

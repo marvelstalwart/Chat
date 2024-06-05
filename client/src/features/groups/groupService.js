@@ -1,13 +1,13 @@
 import axios from "axios"
-const getGroupsURL = "https://chat-crmw.onrender.com/api/groups/get"
-const createGroupURL = "https://chat-crmw.onrender.com/api/groups/create"
-const getGroupMsgsURL = "https://chat-crmw.onrender.com/api/groups/messages/get"
-const getMembersURL ="https://chat-crmw.onrender.com/api/groups/members/get"
-const setAdminURL = "https://chat-crmw.onrender.com/api/groups/admins/add"
-const removeAdminURL = "https://chat-crmw.onrender.com/api/groups/admins/remove"
-const leaveGroupURL = "https://chat-crmw.onrender.com/api/groups/leave"
-const removeMemberURL = "https://chat-crmw.onrender.com/api/groups/members/remove"
-const addMembersURL = "https://chat-crmw.onrender.com/api/groups/members/add"
+const getGroupsURL = "https://chat-278i.onrender.com/api/groups/get"
+const createGroupURL = "https://chat-278i.onrender.com/api/groups/create"
+const getGroupMsgsURL = "https://chat-278i.onrender.com/api/groups/messages/get"
+const getMembersURL ="https://chat-278i.onrender.com/api/groups/members/get"
+const setAdminURL = "https://chat-278i.onrender.com/api/groups/admins/add"
+const removeAdminURL = "https://chat-278i.onrender.com/api/groups/admins/remove"
+const leaveGroupURL = "https://chat-278i.onrender.com/api/groups/leave"
+const removeMemberURL = "https://chat-278i.onrender.com/api/groups/members/remove"
+const addMembersURL = "https://chat-278i.onrender.com/api/groups/members/add"
 const getGroups = async (payload, token)=> {
     const config = {
         headers: {

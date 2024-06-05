@@ -1,6 +1,6 @@
 import axios from "axios";
-const USERS_URL="https://chat-crmw.onrender.com/api/users"
-const USER_URL ="https://chat-crmw.onrender.com/api/users/getUser"
+const USERS_URL="https://chat-278i.onrender.com/api/users"
+const USER_URL ="https://chat-278i.onrender.com/api/users/getUser"
 const getUsers = async(payload, token)=> {
     
         const config = {
