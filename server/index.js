@@ -6,7 +6,11 @@ const groupsRoute = require("./routes/groupsRoute")
 const messageRoute = require("./routes/messagesRoute")
 const userRoute = require("./routes/userRoute")
 const socket = require("socket.io")
-app.use(cors())
+
+app.use(cors({
+    origin: ["https://yarnchat.netlify.app"]
+}))
+
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 require("dotenv").config();
@@ -42,6 +46,7 @@ const io = socket(server, {
     cors: {
      origin: `https://yarnchat.netlify.app`,
      credentials:true
+     
     }        
  }) 
  
