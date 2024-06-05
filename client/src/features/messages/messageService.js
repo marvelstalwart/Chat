@@ -1,9 +1,9 @@
  import axios from "axios"
-const addMessageURI = "https://chat-crmw.onrender.com/api/messages/new"
-const getChatURL = "https://chat-crmw.onrender.com/api/messages/chat"
-const getChatsURL = "https://chat-crmw.onrender.com/api/messages/getchats"
-const getGroupChatsURL = "https://chat-crmw.onrender.com/api/groups/messages/get"
-const sendGroupMsgURL = "https://chat-crmw.onrender.com/api/groups/messages/new"
+const addMessageURI = "https://chat-278i.onrender.com/api/messages/new"
+const getChatURL = "https://chat-278i.onrender.com/api/messages/chat"
+const getChatsURL = "https://chat-278i.onrender.com/api/messages/getchats"
+const getGroupChatsURL = "https://chat-278i.onrender.com/api/groups/messages/get"
+const sendGroupMsgURL = "https://chat-278i.onrender.com/api/groups/messages/new"
 const  newMessage = async (payload, token)=> {
 
    const config = {
